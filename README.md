@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Suivi Athlète - Application de suivi pour athlètes
 
-## Getting Started
+Application de suivi complète pour athlètes construite avec Next.js 15, Supabase, TypeScript, Tailwind CSS et Recharts.
 
-First, run the development server:
+## Fonctionnalités
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🔐 **Authentification** : Système d'authentification complet avec Supabase Auth
+- 📊 **Dashboard** : Vue d'ensemble quotidienne avec métriques clés
+- 📈 **Graphiques** : Visualisation des données sur 7 ou 30 jours
+  - Évolution du poids
+  - Calories (entrées/sorties)
+  - Heures de sommeil
+- 📝 **Formulaires de saisie** :
+  - Nutrition (repas et calories)
+  - Cardio (activités, durée, calories brûlées)
+  - Sommeil (heures, qualité)
+  - Hydratation (litres)
+  - Forme (score 1-10)
+  - Poids
+- 💪 **Séances de musculation** : Historique avec progression des charges
+- 📱 **Responsive** : Design adapté mobile et desktop
+
+## Structure de la base de données
+
+L'application utilise les tables suivantes dans Supabase :
+
+- `athletes` : Profil de l'athlète
+- `weight_logs` : Journal du poids
+- `sleep_logs` : Journal du sommeil
+- `hydration_logs` : Journal d'hydratation
+- `wellness_logs` : Journal de forme
+- `nutrition_logs` : Journal nutritionnel
+- `cardio_logs` : Journal d'activités cardio
+- `workout_sessions` : Séances de musculation
+- `workout_exercises` : Exercices des séances
+
+### Séances modèles (récurrence)
+
+Pour la fonctionnalité “séances modèles” (ex: **Dos** tous les **mercredis**), ajoute ces tables dans Supabase :
+
+```sql
+create table if not exists public.workout_templates (
+  id uuid primary key default gen_random_uuid(),
+  athlete_id uuid not null references public.athletes(id) on delete cascade,
+  name text not null,
+  weekday int not null check (weekday between 0 and 6),
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.workout_template_exercises (
+  id uuid primary key default gen_random_uuid(),
+  template_id uuid not null references public.workout_templates(id) on delete cascade,
+  exercise_name text not null,
+  sets int not null default 0,
+  reps int not null default 0,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ensuite, active les **RLS policies** selon ton modèle (au minimum: l’utilisateur ne voit que ses données via son `athlete_id`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Variables d'environnement** : Créez un fichier `.env.local` avec :
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=votre_url_supabase
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_clé_anon
+   ```
 
-## Learn More
+2. **Installation des dépendances** :
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Lancement du serveur de développement** :
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Technologies utilisées
 
-## Deploy on Vercel
+- **Next.js 15** : Framework React avec App Router
+- **Supabase** : Backend as a Service (BaaS)
+- **TypeScript** : Typage statique
+- **Tailwind CSS** : Framework CSS utilitaire
+- **Recharts** : Bibliothèque de graphiques React
+- **shadcn/ui** : Composants UI modernes
+- **date-fns** : Manipulation de dates
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Structure du projet
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+├── app/
+│   ├── actions/          # Server actions
+│   ├── dashboard/        # Page dashboard
+│   ├── login/            # Page de connexion
+│   ├── signup/           # Page d'inscription
+│   └── setup/            # Configuration du profil
+├── components/
+│   ├── dashboard/        # Composants du dashboard
+│   ├── setup/            # Composants de configuration
+│   └── ui/               # Composants UI réutilisables
+├── lib/
+│   └── supabase/         # Clients Supabase
+└── types/
+    └── database.ts       # Types TypeScript pour la DB
+```
+
+## Déploiement
+
+L'application peut être déployée sur Vercel, Netlify ou tout autre hébergeur compatible Next.js.
+
+Assurez-vous de configurer les variables d'environnement sur votre plateforme de déploiement.
