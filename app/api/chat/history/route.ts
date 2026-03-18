@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 
 export async function GET() {
@@ -7,7 +8,7 @@ export async function GET() {
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('chat_messages')
     .select('*')
     .eq('athlete_id', auth.athleteId)

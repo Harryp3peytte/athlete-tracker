@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { calculateHealthScore } from '@/lib/healthScore';
 
@@ -14,17 +15,17 @@ export async function GET() {
   const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
 
   const [athleteRes, todayMealsRes, todayCardioRes, workoutsRes, sleepRes, weightsRes, hydrationRes, wellnessRes, weekMealsRes, weekCardioRes] = await Promise.all([
-    supabase.from('athletes').select('*').eq('id', auth.athleteId).single(),
-    supabase.from('nutrition_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabase.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabase.from('workout_sessions').select('*, workout_exercises(*)').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabase.from('sleep_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
-    supabase.from('weight_logs').select('*').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr).order('date', { ascending: true }),
-    supabase.from('hydration_logs').select('liters').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabase.from('wellness_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
+    supabaseAdmin.from('athletes').select('*').eq('id', auth.athleteId).single(),
+    supabaseAdmin.from('nutrition_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
+    supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
+    supabaseAdmin.from('workout_sessions').select('*, workout_exercises(*)').eq('athlete_id', auth.athleteId).eq('date', today),
+    supabaseAdmin.from('sleep_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
+    supabaseAdmin.from('weight_logs').select('*').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr).order('date', { ascending: true }),
+    supabaseAdmin.from('hydration_logs').select('liters').eq('athlete_id', auth.athleteId).eq('date', today),
+    supabaseAdmin.from('wellness_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
     // 7-day calorie data
-    supabase.from('nutrition_logs').select('date, calories').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr),
-    supabase.from('cardio_logs').select('date, calories_burned').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr),
+    supabaseAdmin.from('nutrition_logs').select('date, calories').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr),
+    supabaseAdmin.from('cardio_logs').select('date, calories_burned').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr),
   ]);
 
   const athlete = athleteRes.data;
@@ -65,7 +66,7 @@ export async function GET() {
     });
   }
 
-  const healthScore = await calculateHealthScore(supabase, auth.athleteId, today, athlete.daily_calorie_target);
+  const healthScore = await calculateHealthScore(auth.athleteId, today, athlete.daily_calorie_target);
 
   return NextResponse.json({
     athlete,

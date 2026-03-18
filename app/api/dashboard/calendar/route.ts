@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 
 export async function GET(request: NextRequest) {
@@ -16,13 +17,13 @@ export async function GET(request: NextRequest) {
   const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
 
   const [workoutsRes, cardioRes] = await Promise.all([
-    supabase
+    supabaseAdmin
       .from('workout_sessions')
       .select('date, name')
       .eq('athlete_id', auth.athleteId)
       .gte('date', firstDay)
       .lte('date', lastDay),
-    supabase
+    supabaseAdmin
       .from('cardio_logs')
       .select('date, activity_type')
       .eq('athlete_id', auth.athleteId)

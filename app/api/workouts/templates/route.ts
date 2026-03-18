@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { workoutTemplateSchema } from '@/lib/validations';
 
@@ -8,7 +9,7 @@ export async function GET() {
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('workout_templates')
     .select(`
       *,
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const data = workoutTemplateSchema.parse(body);
 
-  const { data: template, error: templateError } = await supabase
+  const { data: template, error: templateError } = await supabaseAdmin
     .from('workout_templates')
     .insert({
       athlete_id: auth.athleteId,
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
       sort_order: ex.sort_order,
     }));
 
-    const { error: exercisesError } = await supabase
+    const { error: exercisesError } = await supabaseAdmin
       .from('workout_template_exercises')
       .insert(exercises);
 
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const { data: fullTemplate, error: fetchError } = await supabase
+  const { data: fullTemplate, error: fetchError } = await supabaseAdmin
     .from('workout_templates')
     .select(`
       *,

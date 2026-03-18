@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { calculateHealthScore } from '@/lib/healthScore';
 
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const { id } = await params;
   const metric = request.nextUrl.searchParams.get('metric') || 'health';
 
-  const { data: members } = await supabase
+  const { data: members } = await supabaseAdmin
     .from('group_members')
     .select('role, athlete_id, athletes(id, name, daily_calorie_target)')
     .eq('group_id', id);
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         for (let i = 0; i < 7; i++) {
           const d = new Date();
           d.setDate(d.getDate() - i);
-          const score = await calculateHealthScore(supabase, athleteId, d.toISOString().split('T')[0], athlete.daily_calorie_target);
+          const score = await calculateHealthScore(athleteId, d.toISOString().split('T')[0], athlete.daily_calorie_target);
           scores.push(score.total);
         }
         const avg = scores.reduce((s, v) => s + v, 0) / scores.length;
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
 
       if (metric === 'calories') {
-        const { data } = await supabase
+        const { data } = await supabaseAdmin
           .from('cardio_logs')
           .select('calories_burned')
           .eq('athlete_id', athleteId)
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
 
       if (metric === 'time') {
-        const { data } = await supabase
+        const { data } = await supabaseAdmin
           .from('cardio_logs')
           .select('duration_minutes')
           .eq('athlete_id', athleteId)
@@ -63,7 +64,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
 
       // sleep regularity
-      const { data: sleeps } = await supabase
+      const { data: sleeps } = await supabaseAdmin
         .from('sleep_logs')
         .select('hours')
         .eq('athlete_id', athleteId)

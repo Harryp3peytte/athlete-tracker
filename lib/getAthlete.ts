@@ -1,18 +1,32 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
-export async function getAthleteId(
-  supabase: SupabaseClient
-): Promise<{ athleteId: string; userId: string } | null> {
+export async function getAuthAndAthlete(): Promise<{ athleteId: string; userId: string } | null> {
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: athlete } = await supabase
+  const { data: athlete } = await supabaseAdmin
     .from('athletes')
     .select('id')
     .eq('user_id', user.id)
     .single();
 
   if (!athlete) return null;
+  return { athleteId: athlete.id, userId: user.id };
+}
 
+// Keep backward-compatible export
+export async function getAthleteId(supabase: { auth: { getUser: () => Promise<{ data: { user: { id: string } | null } }> } }): Promise<{ athleteId: string; userId: string } | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: athlete } = await supabaseAdmin
+    .from('athletes')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
+
+  if (!athlete) return null;
   return { athleteId: athlete.id, userId: user.id };
 }

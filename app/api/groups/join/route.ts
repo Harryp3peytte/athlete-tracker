@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { joinGroupSchema } from '@/lib/validations';
 
@@ -11,7 +12,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { inviteCode } = joinGroupSchema.parse(body);
 
-  const { data: group } = await supabase
+  const { data: group } = await supabaseAdmin
     .from('groups')
     .select('id, name')
     .eq('invite_code', inviteCode)
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
 
   if (!group) return NextResponse.json({ error: 'Code invalide' }, { status: 404 });
 
-  const { data: existing } = await supabase
+  const { data: existing } = await supabaseAdmin
     .from('group_members')
     .select('id')
     .eq('group_id', group.id)
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
 
   if (existing) return NextResponse.json({ error: 'Déjà membre' }, { status: 400 });
 
-  const { error } = await supabase.from('group_members').insert({
+  const { error } = await supabaseAdmin.from('group_members').insert({
     group_id: group.id,
     athlete_id: auth.athleteId,
     role: 'member',

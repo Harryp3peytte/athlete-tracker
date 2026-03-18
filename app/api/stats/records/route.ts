@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 
 export async function GET() {
@@ -8,9 +9,9 @@ export async function GET() {
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const [longestRes, mostCalRes, longestDistRes] = await Promise.all([
-    supabase.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).order('duration_minutes', { ascending: false }).limit(1),
-    supabase.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).order('calories_burned', { ascending: false }).limit(1),
-    supabase.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).not('distance_km', 'is', null).order('distance_km', { ascending: false }).limit(1),
+    supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).order('duration_minutes', { ascending: false }).limit(1),
+    supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).order('calories_burned', { ascending: false }).limit(1),
+    supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).not('distance_km', 'is', null).order('distance_km', { ascending: false }).limit(1),
   ]);
 
   const longest = (longestRes.data || [])[0] || null;

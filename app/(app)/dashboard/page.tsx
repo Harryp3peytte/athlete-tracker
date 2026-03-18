@@ -56,8 +56,7 @@ export default function DashboardPage() {
   }
 
   const target = data.calories.target || 2000;
-  const deficit = data.calories.consumed - data.calories.burned;
-  const isDeficit = deficit < target;
+  const balance = data.calories.consumed - data.calories.burned; // positive = surplus, negative = deficit
 
   // Format calorie trend for chart
   const calorieTrendData = (data.calorieTrend || []).map(d => ({
@@ -131,14 +130,16 @@ export default function DashboardPage() {
                 Brûlées: <span className="num-highlight num-glow-red" style={{ color: '#FF6B6B' }}>{data.calories.burned}</span>
               </div>
               <div className="flex items-center gap-1.5 justify-end">
-                {isDeficit
+                {balance < 0
                   ? <TrendingDown size={14} style={{ color: '#2AC956' }} />
-                  : <TrendingUp size={14} style={{ color: '#FF6B6B' }} />}
+                  : balance > 0
+                  ? <TrendingUp size={14} style={{ color: '#FF6B6B' }} />
+                  : <Minus size={14} style={{ color: '#64D2FF' }} />}
                 <span className="num-highlight text-lg" style={{
-                  color: isDeficit ? '#2AC956' : '#FF6B6B',
-                  textShadow: isDeficit ? '0 0 20px rgba(42,201,86,0.3)' : '0 0 20px rgba(255,107,107,0.3)',
+                  color: balance < 0 ? '#2AC956' : balance > 0 ? '#FF6B6B' : '#64D2FF',
+                  textShadow: balance < 0 ? '0 0 20px rgba(42,201,86,0.3)' : balance > 0 ? '0 0 20px rgba(255,107,107,0.3)' : 'none',
                 }}>
-                  {isDeficit ? 'Déficit' : 'Surplus'}
+                  {balance < 0 ? 'Déficit' : balance > 0 ? 'Surplus' : 'Équilibre'}
                 </span>
               </div>
             </div>

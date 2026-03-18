@@ -1,4 +1,4 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 interface HealthScoreResult {
   total: number;
@@ -12,18 +12,17 @@ interface HealthScoreResult {
 }
 
 export async function calculateHealthScore(
-  supabase: SupabaseClient,
   athleteId: string,
   date: string,
   dailyCalorieTarget: number | null
 ): Promise<HealthScoreResult> {
   const [sleepRes, mealsRes, cardioRes, workoutsRes, hydrationRes, wellnessRes] = await Promise.all([
-    supabase.from('sleep_logs').select('hours').eq('athlete_id', athleteId).eq('date', date).maybeSingle(),
-    supabase.from('nutrition_logs').select('calories').eq('athlete_id', athleteId).eq('date', date),
-    supabase.from('cardio_logs').select('id').eq('athlete_id', athleteId).eq('date', date),
-    supabase.from('workout_sessions').select('id').eq('athlete_id', athleteId).eq('date', date),
-    supabase.from('hydration_logs').select('liters').eq('athlete_id', athleteId).eq('date', date),
-    supabase.from('wellness_logs').select('form_score').eq('athlete_id', athleteId).eq('date', date).maybeSingle(),
+    supabaseAdmin.from('sleep_logs').select('hours').eq('athlete_id', athleteId).eq('date', date).maybeSingle(),
+    supabaseAdmin.from('nutrition_logs').select('calories').eq('athlete_id', athleteId).eq('date', date),
+    supabaseAdmin.from('cardio_logs').select('id').eq('athlete_id', athleteId).eq('date', date),
+    supabaseAdmin.from('workout_sessions').select('id').eq('athlete_id', athleteId).eq('date', date),
+    supabaseAdmin.from('hydration_logs').select('liters').eq('athlete_id', athleteId).eq('date', date),
+    supabaseAdmin.from('wellness_logs').select('form_score').eq('athlete_id', athleteId).eq('date', date).maybeSingle(),
   ]);
 
   // Sleep: 7-9h = 20pts

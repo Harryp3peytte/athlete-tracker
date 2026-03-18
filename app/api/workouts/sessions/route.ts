@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { workoutSessionSchema } from '@/lib/validations';
 
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const period = searchParams.get('period');
 
-  let query = supabase
+  let query = supabaseAdmin
     .from('workout_sessions')
     .select(`
       *,
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const data = workoutSessionSchema.parse(body);
 
-  const { data: session, error: sessionError } = await supabase
+  const { data: session, error: sessionError } = await supabaseAdmin
     .from('workout_sessions')
     .insert({
       athlete_id: auth.athleteId,
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
       notes: ex.notes ?? null,
     }));
 
-    const { error: exercisesError } = await supabase
+    const { error: exercisesError } = await supabaseAdmin
       .from('workout_exercises')
       .insert(exercises);
 
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const { data: fullSession, error: fetchError } = await supabase
+  const { data: fullSession, error: fetchError } = await supabaseAdmin
     .from('workout_sessions')
     .select(`
       *,

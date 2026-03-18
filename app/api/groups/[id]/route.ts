@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -9,10 +10,10 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
   const { id } = await params;
 
-  const { data: group } = await supabase.from('groups').select('*').eq('id', id).single();
+  const { data: group } = await supabaseAdmin.from('groups').select('*').eq('id', id).single();
   if (!group) return NextResponse.json({ error: 'Non trouvé' }, { status: 404 });
 
-  const { data: members } = await supabase
+  const { data: members } = await supabaseAdmin
     .from('group_members')
     .select('id, role, athlete_id, athletes(id, name)')
     .eq('group_id', id);
@@ -30,15 +31,15 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 
   const { id } = await params;
 
-  const { data: group } = await supabase.from('groups').select('created_by').eq('id', id).single();
+  const { data: group } = await supabaseAdmin.from('groups').select('created_by').eq('id', id).single();
   if (!group) return NextResponse.json({ error: 'Non trouvé' }, { status: 404 });
 
   if (group.created_by === auth.athleteId) {
-    await supabase.from('groups').delete().eq('id', id);
+    await supabaseAdmin.from('groups').delete().eq('id', id);
     return NextResponse.json({ message: 'Groupe supprimé' });
   }
 
   // Leave group
-  await supabase.from('group_members').delete().eq('group_id', id).eq('athlete_id', auth.athleteId);
+  await supabaseAdmin.from('group_members').delete().eq('group_id', id).eq('athlete_id', auth.athleteId);
   return NextResponse.json({ message: 'Groupe quitté' });
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { chatMessageSchema } from '@/lib/validations';
 import Anthropic from '@anthropic-ai/sdk';
@@ -16,17 +17,17 @@ export async function POST(request: NextRequest) {
   const today = new Date().toISOString().split('T')[0];
 
   // Save user message
-  await supabase.from('chat_messages').insert({ athlete_id: auth.athleteId, role: 'user', content });
+  await supabaseAdmin.from('chat_messages').insert({ athlete_id: auth.athleteId, role: 'user', content });
 
   // Gather context
   const [athleteRes, weightRes, mealsRes, cardioRes, sleepRes, hydrationRes, wellnessRes] = await Promise.all([
-    supabase.from('athletes').select('*').eq('id', auth.athleteId).single(),
-    supabase.from('weight_logs').select('weight_kg').eq('athlete_id', auth.athleteId).order('date', { ascending: false }).limit(1),
-    supabase.from('nutrition_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabase.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabase.from('sleep_logs').select('*').eq('athlete_id', auth.athleteId).order('date', { ascending: false }).limit(1),
-    supabase.from('hydration_logs').select('liters').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabase.from('wellness_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
+    supabaseAdmin.from('athletes').select('*').eq('id', auth.athleteId).single(),
+    supabaseAdmin.from('weight_logs').select('weight_kg').eq('athlete_id', auth.athleteId).order('date', { ascending: false }).limit(1),
+    supabaseAdmin.from('nutrition_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
+    supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
+    supabaseAdmin.from('sleep_logs').select('*').eq('athlete_id', auth.athleteId).order('date', { ascending: false }).limit(1),
+    supabaseAdmin.from('hydration_logs').select('liters').eq('athlete_id', auth.athleteId).eq('date', today),
+    supabaseAdmin.from('wellness_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
   ]);
 
   const a = athleteRes.data;
@@ -55,7 +56,7 @@ Réponds en français. Sois motivant, concret et donne des conseils actionnables
 Propose des recettes avec les quantités exactes quand on te le demande.`;
 
   // Get chat history
-  const { data: history } = await supabase
+  const { data: history } = await supabaseAdmin
     .from('chat_messages')
     .select('role, content')
     .eq('athlete_id', auth.athleteId)
@@ -74,7 +75,7 @@ Propose des recettes avec les quantités exactes quand on te le demande.`;
 
   const assistantContent = response.content[0].type === 'text' ? response.content[0].text : '';
 
-  const { data: saved } = await supabase
+  const { data: saved } = await supabaseAdmin
     .from('chat_messages')
     .insert({ athlete_id: auth.athleteId, role: 'assistant', content: assistantContent })
     .select()

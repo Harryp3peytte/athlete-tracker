@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { cardioSchema } from '@/lib/validations';
 
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
   since.setDate(since.getDate() - days);
   const type = request.nextUrl.searchParams.get('type');
 
-  let query = supabase
+  let query = supabaseAdmin
     .from('cardio_logs')
     .select('*')
     .eq('athlete_id', auth.athleteId)
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const validated = cardioSchema.parse(body);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('cardio_logs')
     .insert({
       athlete_id: auth.athleteId,

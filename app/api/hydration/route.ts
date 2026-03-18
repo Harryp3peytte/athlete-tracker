@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { hydrationSchema } from '@/lib/validations';
 
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
   const since = new Date();
   since.setDate(since.getDate() - days);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('hydration_logs')
     .select('*')
     .eq('athlete_id', auth.athleteId)
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const validated = hydrationSchema.parse(body);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('hydration_logs')
     .insert({ athlete_id: auth.athleteId, date: validated.date, liters: validated.liters })
     .select()

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { weightSchema } from '@/lib/validations';
 import { periodToDays } from '@/lib/utils';
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
   const since = new Date();
   since.setDate(since.getDate() - periodToDays(period));
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('weight_logs')
     .select('*')
     .eq('athlete_id', auth.athleteId)
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const validated = weightSchema.parse(body);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('weight_logs')
     .upsert(
       { athlete_id: auth.athleteId, weight_kg: validated.weight_kg, date: validated.date, notes: validated.notes },
@@ -59,7 +60,7 @@ export async function DELETE(request: NextRequest) {
   const id = request.nextUrl.searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'ID manquant' }, { status: 400 });
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('weight_logs')
     .delete()
     .eq('id', id)
