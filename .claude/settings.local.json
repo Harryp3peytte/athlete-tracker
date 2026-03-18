@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsc:*)",
+      "Bash(cd:*)",
+      "Bash(rm -rf server .next app components lib types hooks public)",
+      "Bash(rm -f middleware.ts next.config.ts next-env.d.ts postcss.config.mjs eslint.config.mjs components.json supabase-fixes.sql supabase-setup.sql README.md tsconfig.json package.json package-lock.json .env .env.local)",
+      "Bash(rm -rf node_modules)",
+      "Bash(rm -rf client/node_modules)",
+      "Bash(rm -rf client)",
+      "Bash(ls -la \"D:/alex/Documents/TRAVAIL/00 - SUIVI ATHLETE/athlete-tracker/app/\\(app\\)/\")",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(npx next:*)",
+      "Bash(rm -rf prisma)",
+      "Bash(rm -f lib/prisma.ts)",
+      "Bash(mkdir -p \"D:\\\\alex\\\\Documents\\\\TRAVAIL\\\\00 - SUIVI ATHLETE\\\\athlete-tracker\\\\app\\\\api\\\\workouts\\\\sessions\\\\[id]\")",
+      "Bash(mkdir -p \"D:\\\\alex\\\\Documents\\\\TRAVAIL\\\\00 - SUIVI ATHLETE\\\\athlete-tracker\\\\app\\\\api\\\\workouts\\\\templates\\\\[id]\")",
+      "Bash(npm uninstall:*)",
+      "Bash(node -e \":*)"
+    ]
+  }
+}

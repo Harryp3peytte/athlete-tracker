@@ -1,22 +1,7 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { getAthlete } from '@/app/actions/athlete'
+import { redirect } from 'next/navigation';
 
-export default async function Home() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+export const dynamic = 'force-dynamic';
 
-  if (!user) {
-    redirect('/login')
-  }
-
-  const athlete = await getAthlete()
-
-  if (!athlete) {
-    redirect('/setup')
-  }
-
-  redirect('/dashboard')
+export default function RootPage() {
+  redirect('/dashboard');
 }

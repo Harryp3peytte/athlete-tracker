@@ -1,0 +1,46 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { getAthleteId } from '@/lib/getAthlete';
+import { wellnessSchema } from '@/lib/validations';
+
+export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+  const auth = await getAthleteId(supabase);
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const period = request.nextUrl.searchParams.get('period') || '7d';
+  const days = period === '30d' ? 30 : 7;
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
+  const { data, error } = await supabase
+    .from('wellness_logs')
+    .select('*')
+    .eq('athlete_id', auth.athleteId)
+    .gte('date', since.toISOString().split('T')[0])
+    .order('date', { ascending: true });
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(data || []);
+}
+
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const auth = await getAthleteId(supabase);
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const body = await request.json();
+  const validated = wellnessSchema.parse(body);
+
+  const { data, error } = await supabase
+    .from('wellness_logs')
+    .upsert(
+      { athlete_id: auth.athleteId, date: validated.date, form_score: validated.form_score, notes: validated.notes },
+      { onConflict: 'athlete_id,date' }
+    )
+    .select()
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(data, { status: 201 });
+}
