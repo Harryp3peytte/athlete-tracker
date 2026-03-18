@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { nutritionSchema } from '@/lib/validations';
 
@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const dateStr = request.nextUrl.searchParams.get('date');
   let query = supabaseAdmin.from('nutrition_logs').select('*').eq('athlete_id', auth.athleteId);
@@ -23,6 +24,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const body = await request.json();
   const validated = nutritionSchema.parse(body);

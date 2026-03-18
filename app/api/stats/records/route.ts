@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 
 export async function GET() {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const [longestRes, mostCalRes, longestDistRes] = await Promise.all([
     supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).order('duration_minutes', { ascending: false }).limit(1),

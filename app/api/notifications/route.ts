@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 
 export interface NotificationPreference {
@@ -26,6 +26,7 @@ export async function GET() {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const { data } = await supabaseAdmin
     .from('notification_preferences')
@@ -46,6 +47,7 @@ export async function PUT(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const body = await request.json();
   const { reminder_type, enabled, time, interval_minutes } = body;

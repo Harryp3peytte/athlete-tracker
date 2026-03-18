@@ -19,7 +19,10 @@
       "Bash(mkdir -p \"D:\\\\alex\\\\Documents\\\\TRAVAIL\\\\00 - SUIVI ATHLETE\\\\athlete-tracker\\\\app\\\\api\\\\workouts\\\\sessions\\\\[id]\")",
       "Bash(mkdir -p \"D:\\\\alex\\\\Documents\\\\TRAVAIL\\\\00 - SUIVI ATHLETE\\\\athlete-tracker\\\\app\\\\api\\\\workouts\\\\templates\\\\[id]\")",
       "Bash(npm uninstall:*)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(while read:*)",
+      "Bash(do sed:*)",
+      "Bash(done)"
     ]
   }
 }

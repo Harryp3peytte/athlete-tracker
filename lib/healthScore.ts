@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 interface HealthScoreResult {
   total: number;
@@ -16,6 +16,7 @@ export async function calculateHealthScore(
   date: string,
   dailyCalorieTarget: number | null
 ): Promise<HealthScoreResult> {
+  const supabaseAdmin = getSupabaseAdmin();
   const [sleepRes, mealsRes, cardioRes, workoutsRes, hydrationRes, wellnessRes] = await Promise.all([
     supabaseAdmin.from('sleep_logs').select('hours').eq('athlete_id', athleteId).eq('date', date).maybeSingle(),
     supabaseAdmin.from('nutrition_logs').select('calories').eq('athlete_id', athleteId).eq('date', date),

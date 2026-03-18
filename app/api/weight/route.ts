@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { weightSchema } from '@/lib/validations';
 import { periodToDays } from '@/lib/utils';
@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const period = request.nextUrl.searchParams.get('period') || '30d';
   const since = new Date();
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const body = await request.json();
   const validated = weightSchema.parse(body);
@@ -56,6 +58,7 @@ export async function DELETE(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const id = request.nextUrl.searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'ID manquant' }, { status: 400 });

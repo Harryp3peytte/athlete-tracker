@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { calculateHealthScore } from '@/lib/healthScore';
 
@@ -8,6 +8,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const { id } = await params;
   const metric = request.nextUrl.searchParams.get('metric') || 'health';
@@ -77,6 +78,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   );
 
   const filtered = leaderboard.filter(Boolean);
-  filtered.sort((a, b) => metric === 'sleep' ? a!.value - b!.value : b!.value - a!.value);
+  filtered.sort((a, b) => {
+    const av = (a as { value: number }).value;
+    const bv = (b as { value: number }).value;
+    return metric === 'sleep' ? av - bv : bv - av;
+  });
   return NextResponse.json(filtered);
 }

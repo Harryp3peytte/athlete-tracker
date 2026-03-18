@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { wellnessSchema } from '@/lib/validations';
 
@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const period = request.nextUrl.searchParams.get('period') || '7d';
   const days = period === '30d' ? 30 : 7;
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = getSupabaseAdmin();
 
   const body = await request.json();
   const validated = wellnessSchema.parse(body);
