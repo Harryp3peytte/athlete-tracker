@@ -47,7 +47,7 @@ export const workoutSessionSchema = z.object({
 
 export const workoutTemplateSchema = z.object({
   name: z.string().min(1),
-  weekday: z.number().int().min(0).max(6),
+  weekday: z.number().int().min(0).max(6).optional().default(0),
   notes: z.string().optional().nullable(),
   exercises: z.array(z.object({
     exercise_name: z.string().min(1),

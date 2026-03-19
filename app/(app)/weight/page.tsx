@@ -23,14 +23,25 @@ export default function WeightPage() {
 
   const handleSubmit = async () => {
     if (!form.weight) return;
-    await fetch('/api/weight', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ weight_kg: parseFloat(form.weight), date: form.date, notes: form.notes || null }),
-    });
-    setModal(false);
-    setForm({ weight: '', date: new Date().toISOString().split('T')[0], notes: '' });
-    fetchData();
+    try {
+      const res = await fetch('/api/weight', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weight_kg: parseFloat(form.weight), date: form.date, notes: form.notes || null }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('API error:', data);
+        alert(`Erreur: ${data.error || 'Échec de l\'enregistrement'}`);
+        return;
+      }
+      setModal(false);
+      setForm({ weight: '', date: new Date().toISOString().split('T')[0], notes: '' });
+      fetchData();
+    } catch (err) {
+      console.error('Fetch error:', err);
+      alert('Erreur de connexion');
+    }
   };
 
   const handleDelete = async (id: string) => {

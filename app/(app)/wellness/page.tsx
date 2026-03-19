@@ -27,14 +27,25 @@ export default function WellnessPage() {
 
   const handleSubmit = async () => {
     const today = new Date().toISOString().split('T')[0];
-    await fetch('/api/wellness', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date: today, form_score: parseInt(form.score), notes: form.notes || null }),
-    });
-    setModal(false);
-    setForm({ score: '7', notes: '' });
-    fetchData();
+    try {
+      const res = await fetch('/api/wellness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: today, form_score: parseInt(form.score), notes: form.notes || null }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('API error:', data);
+        alert(`Erreur: ${data.error || 'Échec de l\'enregistrement'}`);
+        return;
+      }
+      setModal(false);
+      setForm({ score: '7', notes: '' });
+      fetchData();
+    } catch (err) {
+      console.error('Fetch error:', err);
+      alert('Erreur de connexion');
+    }
   };
 
   const todayEntry = entries.find(e => e.date === new Date().toISOString().split('T')[0]);

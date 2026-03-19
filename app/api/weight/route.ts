@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
     .gte('date', since.toISOString().split('T')[0])
     .order('date', { ascending: true });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Weight GET error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   const entries = data || [];
   const current = entries.length > 0 ? entries[entries.length - 1].weight_kg : null;
@@ -38,19 +41,28 @@ export async function POST(request: NextRequest) {
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const supabaseAdmin = getSupabaseAdmin();
 
-  const body = await request.json();
-  const validated = weightSchema.parse(body);
+  let validated;
+  try {
+    const body = await request.json();
+    validated = weightSchema.parse(body);
+  } catch (err) {
+    console.error('Weight validation error:', err);
+    return NextResponse.json({ error: 'Données invalides', details: String(err) }, { status: 400 });
+  }
 
   const { data, error } = await supabaseAdmin
     .from('weight_logs')
     .upsert(
-      { athlete_id: auth.athleteId, weight_kg: validated.weight_kg, date: validated.date, notes: validated.notes },
+      { athlete_id: auth.athleteId, weight_kg: validated.weight_kg, date: validated.date, notes: validated.notes ?? null },
       { onConflict: 'athlete_id,date' }
     )
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Weight insert error:', error);
+    return NextResponse.json({ error: error.message, details: error }, { status: 500 });
+  }
   return NextResponse.json(data, { status: 201 });
 }
 
@@ -69,6 +81,9 @@ export async function DELETE(request: NextRequest) {
     .eq('id', id)
     .eq('athlete_id', auth.athleteId);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Weight delete error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json({ message: 'Supprimé' });
 }

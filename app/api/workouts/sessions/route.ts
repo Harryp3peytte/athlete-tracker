@@ -52,8 +52,14 @@ export async function POST(request: NextRequest) {
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const supabaseAdmin = getSupabaseAdmin();
 
-  const body = await request.json();
-  const data = workoutSessionSchema.parse(body);
+  let data;
+  try {
+    const body = await request.json();
+    data = workoutSessionSchema.parse(body);
+  } catch (err) {
+    console.error('Session validation error:', err);
+    return NextResponse.json({ error: 'Données invalides', details: String(err) }, { status: 400 });
+  }
 
   const { data: session, error: sessionError } = await supabaseAdmin
     .from('workout_sessions')

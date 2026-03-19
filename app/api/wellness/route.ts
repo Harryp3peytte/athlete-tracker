@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
     .gte('date', since.toISOString().split('T')[0])
     .order('date', { ascending: true });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Wellness GET error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json(data || []);
 }
 
@@ -32,18 +35,27 @@ export async function POST(request: NextRequest) {
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const supabaseAdmin = getSupabaseAdmin();
 
-  const body = await request.json();
-  const validated = wellnessSchema.parse(body);
+  let validated;
+  try {
+    const body = await request.json();
+    validated = wellnessSchema.parse(body);
+  } catch (err) {
+    console.error('Wellness validation error:', err);
+    return NextResponse.json({ error: 'Données invalides', details: String(err) }, { status: 400 });
+  }
 
   const { data, error } = await supabaseAdmin
     .from('wellness_logs')
     .upsert(
-      { athlete_id: auth.athleteId, date: validated.date, form_score: validated.form_score, notes: validated.notes },
+      { athlete_id: auth.athleteId, date: validated.date, form_score: validated.form_score, notes: validated.notes ?? null },
       { onConflict: 'athlete_id,date' }
     )
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Wellness insert error:', error);
+    return NextResponse.json({ error: error.message, details: error }, { status: 500 });
+  }
   return NextResponse.json(data, { status: 201 });
 }

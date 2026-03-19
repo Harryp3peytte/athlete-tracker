@@ -107,6 +107,24 @@ export interface WorkoutTemplateExercise {
   created_at: string;
 }
 
+export interface WeeklyProgram {
+  id: string;
+  athlete_id: string;
+  weekday: number; // 0=Lundi, 6=Dimanche
+  template_id: string | null;
+  template?: WorkoutTemplate; // jointure
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExerciseHistory {
+  date: string;
+  exercise_name: string;
+  sets: number;
+  reps: number;
+  weight_kg: number | null;
+}
+
 export interface HydrationLog {
   id: string;
   athlete_id: string;
@@ -177,8 +195,14 @@ export const CARDIO_TYPE_LABELS: Record<string, string> = {
   other: 'Autre',
 };
 
-export const WEEKDAY_LABELS: string[] = [
+// Legacy: JS Date weekday order (0=Sunday)
+export const WEEKDAY_LABELS_SUNDAY_FIRST: string[] = [
   'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi',
+];
+
+// Programme hebdomadaire: 0=Lundi, 6=Dimanche
+export const WEEKDAY_LABELS: string[] = [
+  'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche',
 ];
 
 export interface DashboardData {

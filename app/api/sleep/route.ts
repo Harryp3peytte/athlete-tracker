@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
     .gte('date', since.toISOString().split('T')[0])
     .order('date', { ascending: true });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Sleep GET error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   const entries = data || [];
   const avgHours = entries.length > 0
@@ -38,18 +41,27 @@ export async function POST(request: NextRequest) {
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const supabaseAdmin = getSupabaseAdmin();
 
-  const body = await request.json();
-  const validated = sleepSchema.parse(body);
+  let validated;
+  try {
+    const body = await request.json();
+    validated = sleepSchema.parse(body);
+  } catch (err) {
+    console.error('Sleep validation error:', err);
+    return NextResponse.json({ error: 'Données invalides', details: String(err) }, { status: 400 });
+  }
 
   const { data, error } = await supabaseAdmin
     .from('sleep_logs')
     .upsert(
-      { athlete_id: auth.athleteId, date: validated.date, hours: validated.hours, quality: validated.quality, notes: validated.notes },
+      { athlete_id: auth.athleteId, date: validated.date, hours: validated.hours, quality: validated.quality ?? null, notes: validated.notes ?? null },
       { onConflict: 'athlete_id,date' }
     )
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('Sleep insert error:', error);
+    return NextResponse.json({ error: error.message, details: error }, { status: 500 });
+  }
   return NextResponse.json(data, { status: 201 });
 }

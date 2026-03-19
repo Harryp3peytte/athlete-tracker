@@ -53,19 +53,30 @@ export default function SleepPage() {
 
   const handleSubmit = async () => {
     if (!form.date || !form.hours) return;
-    await fetch('/api/sleep', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        date:    form.date,
-        hours:   parseFloat(form.hours),
-        quality: form.quality ? parseInt(form.quality, 10) : null,
-        notes:   form.notes || null,
-      }),
-    });
-    setModal(false);
-    setForm(EMPTY_FORM);
-    fetchData();
+    try {
+      const res = await fetch('/api/sleep', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date:    form.date,
+          hours:   parseFloat(form.hours),
+          quality: form.quality ? parseInt(form.quality, 10) : null,
+          notes:   form.notes || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('API error:', data);
+        alert(`Erreur: ${data.error || 'Échec de l\'enregistrement'}`);
+        return;
+      }
+      setModal(false);
+      setForm(EMPTY_FORM);
+      fetchData();
+    } catch (err) {
+      console.error('Fetch error:', err);
+      alert('Erreur de connexion');
+    }
   };
 
   const handleDelete = async (id: string) => {
