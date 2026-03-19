@@ -38,7 +38,9 @@ export async function GET() {
   const weights = weightsRes.data || [];
 
   const caloriesConsumed = todayMeals.reduce((s: number, m: { calories: number }) => s + (m.calories || 0), 0);
-  const caloriesBurned = todayCardio.reduce((s: number, c: { calories_burned: number }) => s + (c.calories_burned || 0), 0);
+  const metabolism = athlete.base_metabolism || 1800;
+  const activitiesBurned = todayCardio.reduce((s: number, c: { calories_burned: number }) => s + (c.calories_burned || 0), 0);
+  const caloriesBurned = metabolism + activitiesBurned;
   const totalProteins = todayMeals.reduce((s: number, m: { proteins: number }) => s + (m.proteins || 0), 0);
   const totalCarbs = todayMeals.reduce((s: number, m: { carbs: number }) => s + (m.carbs || 0), 0);
   const totalFats = todayMeals.reduce((s: number, m: { fats: number }) => s + (m.fats || 0), 0);
@@ -63,7 +65,7 @@ export async function GET() {
     calorieTrend.push({
       date: dateStr,
       consumed: consumedByDate[dateStr] || 0,
-      burned: burnedByDate[dateStr] || 0,
+      burned: metabolism + (burnedByDate[dateStr] || 0),
     });
   }
 
@@ -77,6 +79,8 @@ export async function GET() {
       burned: caloriesBurned,
       target: athlete.daily_calorie_target || 2000,
       net: caloriesConsumed - caloriesBurned,
+      metabolism,
+      activities: activitiesBurned,
     },
     calorieTrend,
     macros: { proteins: totalProteins, carbs: totalCarbs, fats: totalFats },

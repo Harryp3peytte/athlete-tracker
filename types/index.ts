@@ -208,7 +208,7 @@ export const WEEKDAY_LABELS: string[] = [
 export interface DashboardData {
   athlete: Athlete;
   healthScore: { total: number; breakdown: { sleep: number; calories: number; activity: number; hydration: number; wellness: number } };
-  calories: { consumed: number; burned: number; target: number; net: number };
+  calories: { consumed: number; burned: number; target: number; net: number; metabolism: number; activities: number };
   calorieTrend: Array<{ date: string; consumed: number; burned: number }>;
   macros: { proteins: number; carbs: number; fats: number };
   weight: { current: number | null; trend: WeightLog[] };

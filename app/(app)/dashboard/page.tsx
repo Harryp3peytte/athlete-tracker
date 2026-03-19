@@ -129,6 +129,9 @@ export default function DashboardPage() {
               <div className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
                 Brûlées: <span className="num-highlight num-glow-red" style={{ color: '#FF6B6B' }}>{data.calories.burned}</span>
               </div>
+              <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                dont {data.calories.metabolism} métabolisme + {data.calories.activities} activités
+              </div>
               <div className="flex items-center gap-1.5 justify-end">
                 {balance < 0
                   ? <TrendingDown size={14} style={{ color: '#2AC956' }} />

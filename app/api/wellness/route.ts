@@ -46,10 +46,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await supabaseAdmin
     .from('wellness_logs')
-    .upsert(
-      { athlete_id: auth.athleteId, date: validated.date, form_score: validated.form_score, notes: validated.notes ?? null },
-      { onConflict: 'athlete_id,date' }
-    )
+    .insert({ athlete_id: auth.athleteId, date: validated.date, form_score: validated.form_score, notes: validated.notes ?? null })
     .select()
     .single();
 
