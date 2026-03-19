@@ -69,7 +69,7 @@ export async function GET() {
     });
   }
 
-  const healthScore = await calculateHealthScore(auth.athleteId, today, athlete.daily_calorie_target);
+  const healthScore = await calculateHealthScore(auth.athleteId, today, athlete.daily_calorie_target, athlete.goal_type);
 
   return NextResponse.json({
     athlete,

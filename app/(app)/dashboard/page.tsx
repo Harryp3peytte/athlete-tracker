@@ -23,11 +23,12 @@ const quickActions = [
 ];
 
 const scoreBreakdown = [
-  { key: 'sleep', label: 'Sommeil', color: '#8E8AFF' },
-  { key: 'calories', label: 'Calories', color: '#FF9F0A' },
-  { key: 'activity', label: 'Activité', color: '#FF6B6B' },
-  { key: 'hydration', label: 'Hydratation', color: '#64D2FF' },
-  { key: 'wellness', label: 'Bien-être', color: '#FF375F' },
+  { key: 'sleep', label: 'Sommeil', color: '#8E8AFF', max: 20 },
+  { key: 'calories', label: 'Calories', color: '#FF9F0A', max: 20 },
+  { key: 'activity', label: 'Activité', color: '#FF6B6B', max: 20 },
+  { key: 'hydration', label: 'Hydratation', color: '#64D2FF', max: 15 },
+  { key: 'wellness', label: 'Bien-être', color: '#FF375F', max: 15 },
+  { key: 'regularity', label: 'Régularité', color: '#2AC956', max: 10 },
 ] as const;
 
 const tooltipStyle = {
@@ -96,19 +97,19 @@ export default function DashboardPage() {
           <AnimatedRing score={data.healthScore.total} gradientFrom="#2AC956" gradientTo="#00C7BE" />
           <div className="flex-1 space-y-2.5">
             <h3 className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>Score du jour</h3>
-            {scoreBreakdown.map(({ key, label, color }) => {
+            {scoreBreakdown.map(({ key, label, color, max }) => {
               const val = data.healthScore.breakdown[key];
               return (
                 <div key={key} className="flex items-center gap-2.5">
                   <span className="text-[11px] w-20" style={{ color: 'rgba(255,255,255,0.4)' }}>{label}</span>
                   <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
                     <div className="h-full rounded-full" style={{
-                      width: `${(val / 20) * 100}%`, background: color,
+                      width: `${(val / max) * 100}%`, background: color,
                       boxShadow: `0 0 8px ${color}40`,
                       transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
                     }} />
                   </div>
-                  <span className="text-[11px] w-8 text-right" style={{ color: 'rgba(255,255,255,0.25)' }}>{val}/20</span>
+                  <span className="text-[11px] w-10 text-right" style={{ color: 'rgba(255,255,255,0.25)' }}>{val}/{max}</span>
                 </div>
               );
             })}

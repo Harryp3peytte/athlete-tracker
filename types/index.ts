@@ -11,6 +11,7 @@ export interface Athlete {
   gender: 'male' | 'female' | 'other' | null;
   base_metabolism: number | null;
   daily_calorie_target: number | null;
+  goal_type: 'LOSE_WEIGHT' | 'MAINTAIN' | 'GAIN_MUSCLE' | null;
   created_at: string;
   updated_at: string;
 }
@@ -207,7 +208,7 @@ export const WEEKDAY_LABELS: string[] = [
 
 export interface DashboardData {
   athlete: Athlete;
-  healthScore: { total: number; breakdown: { sleep: number; calories: number; activity: number; hydration: number; wellness: number } };
+  healthScore: { total: number; breakdown: { sleep: number; calories: number; activity: number; hydration: number; wellness: number; regularity: number } };
   calories: { consumed: number; burned: number; target: number; net: number; metabolism: number; activities: number };
   calorieTrend: Array<{ date: string; consumed: number; burned: number }>;
   macros: { proteins: number; carbs: number; fats: number };

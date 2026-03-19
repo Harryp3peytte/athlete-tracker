@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   const { data: members } = await supabaseAdmin
     .from('group_members')
-    .select('role, athlete_id, athletes(id, name, daily_calorie_target)')
+    .select('role, athlete_id, athletes(id, name, daily_calorie_target, goal_type)')
     .eq('group_id', id);
 
   if (!members) return NextResponse.json({ error: 'Non trouvé' }, { status: 404 });
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   const leaderboard = await Promise.all(
     members.map(async (member: Record<string, unknown>) => {
-      const athleteData = member.athletes as { id: string; name: string; daily_calorie_target: number | null } | { id: string; name: string; daily_calorie_target: number | null }[] | null;
+      const athleteData = member.athletes as { id: string; name: string; daily_calorie_target: number | null; goal_type: string | null } | { id: string; name: string; daily_calorie_target: number | null; goal_type: string | null }[] | null;
       const athlete = Array.isArray(athleteData) ? athleteData[0] : athleteData;
       if (!athlete) return null;
       const athleteId = member.athlete_id as string;
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         for (let i = 0; i < 7; i++) {
           const d = new Date();
           d.setDate(d.getDate() - i);
-          const score = await calculateHealthScore(athleteId, d.toISOString().split('T')[0], athlete.daily_calorie_target);
+          const score = await calculateHealthScore(athleteId, d.toISOString().split('T')[0], athlete.daily_calorie_target, athlete.goal_type);
           scores.push(score.total);
         }
         const avg = scores.reduce((s, v) => s + v, 0) / scores.length;
