@@ -28,6 +28,30 @@ async function handleSend(request: NextRequest) {
 
   initWebPush();
   const supabaseAdmin = getSupabaseAdmin();
+  const isTest = new URL(request.url).searchParams.get('test') === 'true';
+
+  // Test mode: send a test notification to ALL subscribed users
+  if (isTest) {
+    const { data: subscriptions } = await supabaseAdmin
+      .from('push_subscriptions')
+      .select('*');
+
+    if (!subscriptions || subscriptions.length === 0) {
+      return NextResponse.json({ error: 'Aucune subscription push trouvée', sent: 0 });
+    }
+
+    let sent = 0;
+    for (const sub of subscriptions) {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.keys_p256dh, auth: sub.keys_auth } },
+          JSON.stringify({ title: '🏋️ Test FitTrack', body: 'Les notifications push fonctionnent !', url: '/dashboard' })
+        );
+        sent++;
+      } catch { /* ignore */ }
+    }
+    return NextResponse.json({ test: true, sent });
+  }
 
   // Get current time in HH:MM (Paris timezone)
   const now = new Date();
