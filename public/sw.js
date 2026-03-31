@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fittrack-v1';
+const CACHE_NAME = 'fittrack-v2';
 const urlsToCache = ['/dashboard', '/login', '/manifest.json'];
 
 self.addEventListener('install', (event) => {
@@ -29,8 +29,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
+      icon: '/icons/icon-192.svg',
+      badge: '/icons/icon-192.svg',
       vibrate: [200, 100, 200],
       data: { url: data.url || '/dashboard' },
     })

@@ -9,12 +9,12 @@ import GlassCard from '@/components/ui/GlassCard';
 import TrendChart from '@/components/charts/TrendChart';
 import type { Athlete } from '@/types';
 
-interface NotifPref {
+type NotifPref = {
   reminder_type: string;
   enabled: boolean;
   time: string | null;
   interval_minutes: number | null;
-}
+};
 
 const NOTIF_LABELS: Record<string, { icon: string; label: string }> = {
   wake: { icon: '☀️', label: 'Rappel réveil' },
@@ -34,18 +34,13 @@ export default function ProfilePage() {
   const [form, setForm] = useState({ name: '', age: '', height_cm: '', gender: 'male', daily_calorie_target: '', base_metabolism: '' });
   const [deficitData, setDeficitData] = useState<Array<{ date: string; net: number; target: number }>>([]);
   const [notifPrefs, setNotifPrefs] = useState<NotifPref[]>([]);
-  const [notifPermission, setNotifPermission] = useState(false);
-  const { requestPermission, scheduleReminders } = useNotifications();
-
-  useEffect(() => {
-    if ('Notification' in window) setNotifPermission(Notification.permission === 'granted');
-  }, []);
+  const { subscribe, isSubscribed, permission } = useNotifications();
 
   useEffect(() => {
     fetch('/api/notifications').then(r => r.json()).then((data: NotifPref[]) => {
-      if (Array.isArray(data)) { setNotifPrefs(data); scheduleReminders(data); }
+      if (Array.isArray(data)) setNotifPrefs(data);
     }).catch(console.error);
-  }, [scheduleReminders]);
+  }, []);
 
   useEffect(() => {
     fetch('/api/auth/complete-profile').then(r => r.json()).then((data: Athlete) => {
@@ -190,17 +185,19 @@ export default function ProfilePage() {
           <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider flex items-center gap-2">
             <Bell size={14} style={{ color: '#FF9F0A' }} /> Notifications
           </h3>
-          {!notifPermission && (
+          {!isSubscribed && (
             <button
-              onClick={async () => {
-                const granted = await requestPermission();
-                setNotifPermission(granted);
-              }}
+              onClick={subscribe}
               className="text-xs px-3 py-1 rounded-lg transition-colors"
               style={{ background: '#FF9F0A20', color: '#FF9F0A' }}
             >
-              Activer
+              {permission === 'denied' ? 'Bloqué' : 'Activer les push'}
             </button>
+          )}
+          {isSubscribed && (
+            <span className="text-xs px-3 py-1 rounded-lg" style={{ background: '#2AC95620', color: '#2AC956' }}>
+              Activé
+            </span>
           )}
         </div>
         <div className="space-y-2">
@@ -237,14 +234,13 @@ export default function ProfilePage() {
                   <button
                     onClick={async () => {
                       const newEnabled = !pref.enabled;
+                      if (newEnabled && !isSubscribed) await subscribe();
                       await fetch('/api/notifications', {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ ...pref, enabled: newEnabled }),
                       });
-                      const updated = notifPrefs.map(p => p.reminder_type === pref.reminder_type ? { ...p, enabled: newEnabled } : p);
-                      setNotifPrefs(updated);
-                      scheduleReminders(updated);
+                      setNotifPrefs(prev => prev.map(p => p.reminder_type === pref.reminder_type ? { ...p, enabled: newEnabled } : p));
                     }}
                     className="w-10 h-6 rounded-full relative transition-colors"
                     style={{ background: pref.enabled ? '#2AC956' : 'rgba(255,255,255,0.1)' }}
