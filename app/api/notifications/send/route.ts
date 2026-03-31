@@ -22,8 +22,12 @@ function initWebPush() {
 async function handleSend(request: NextRequest) {
   // Protect with secret
   const secret = request.headers.get('x-cron-secret') || new URL(request.url).searchParams.get('secret');
-  if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const envSecret = process.env.CRON_SECRET;
+  if (!envSecret) {
+    return NextResponse.json({ error: 'CRON_SECRET not configured on server' }, { status: 500 });
+  }
+  if (secret !== envSecret) {
+    return NextResponse.json({ error: 'Forbidden', hint: `secret length: ${secret?.length}, env length: ${envSecret.length}` }, { status: 403 });
   }
 
   initWebPush();
