@@ -2,151 +2,97 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========== iOS Color Tokens ========== */
+/* ========== FitTrack Warm Rosé Theme ========== */
 :root {
-  /* Tracking colors (same in both themes) */
+  /* Tracking colors */
   --color-energy: #FF6B6B;
   --color-move: #FF2D55;
   --color-exercise: #2AC956;
   --color-stand: #00C7BE;
-  --color-sleep: #8E8AFF;
-  --color-nutrition: #FF9F0A;
-  --color-water: #64D2FF;
+  --color-sleep: #5E5CE6;
+  --color-nutrition: #FF9500;
+  --color-water: #32ADE6;
   --color-wellness: #FF375F;
   --color-weight: #30D158;
-  --color-cardio: #FF6B6B;
+  --color-cardio: #FF2D55;
   --color-muscle: #BF5AF2;
-  --color-accent: #10B981;
+  --color-accent: #FF2D55;
 
-  /* ===== Light mode (default) ===== */
-  --bg-primary: #F2F2F7;
-  --bg-secondary: #FFFFFF;
-  --bg-tertiary: #F9F9FB;
-  --bg-grouped: #F2F2F7;
-  --bg-nav: rgba(249, 249, 251, 0.88);
-  --bg-input: rgba(120, 120, 128, 0.08);
-  --bg-hover: rgba(120, 120, 128, 0.06);
-  --bg-active: rgba(120, 120, 128, 0.12);
+  /* Activity rings (Apple style) */
+  --color-ring-red: #FF2D55;
+  --color-ring-green: #2AC956;
+  --color-ring-cyan: #00C7BE;
+
+  /* Functional colors */
+  --color-calories: #FF9500;
+  --color-activity: #FF2D55;
+  --color-hydration: #32ADE6;
+  --color-regularity: #2AC956;
+
+  /* Backgrounds */
+  --bg-primary: transparent;
+  --bg-secondary: rgba(255, 255, 255, 0.45);
+  --bg-tertiary: rgba(255, 255, 255, 0.3);
+  --bg-grouped: transparent;
+  --bg-nav: rgba(255, 255, 255, 0.7);
+  --bg-input: rgba(0, 0, 0, 0.04);
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-active: rgba(0, 0, 0, 0.06);
 
   /* Glass */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-bg-subtle: rgba(255, 255, 255, 0.55);
-  --glass-bg-elevated: rgba(255, 255, 255, 0.82);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-border-hover: rgba(0, 0, 0, 0.1);
-  --glass-shadow: 0 2px 16px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.08);
-  --glass-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.1);
-  --glass-inset: inset 0 0.5px 0 rgba(255, 255, 255, 0.8);
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.35);
+  --glass-bg-elevated: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-border-hover: rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 4px 24px rgba(139, 58, 74, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --glass-shadow-elevated: 0 8px 32px rgba(139, 58, 74, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
   /* Text */
-  --text-primary: #1C1C1E;
-  --text-secondary: rgba(60, 60, 67, 0.6);
-  --text-tertiary: rgba(60, 60, 67, 0.3);
-  --text-quaternary: rgba(60, 60, 67, 0.18);
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B5B5B;
+  --text-tertiary: #9B8A8A;
+  --text-quaternary: rgba(155, 138, 138, 0.5);
   --text-on-color: #FFFFFF;
 
   /* Borders & separators */
-  --border-default: rgba(0, 0, 0, 0.08);
-  --border-subtle: rgba(0, 0, 0, 0.04);
-  --separator: rgba(60, 60, 67, 0.12);
+  --border-default: rgba(180, 130, 130, 0.2);
+  --border-subtle: rgba(180, 130, 130, 0.1);
+  --separator: rgba(180, 130, 130, 0.15);
 
   /* Button */
-  --btn-primary-bg: linear-gradient(135deg, #10B981, #059669);
-  --btn-primary-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
+  --btn-primary-bg: #FF2D55;
+  --btn-primary-shadow: 0 4px 14px rgba(255, 45, 85, 0.25);
 
   /* Scrollbar */
-  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
-  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb: rgba(139, 58, 74, 0.15);
+  --scrollbar-thumb-hover: rgba(139, 58, 74, 0.25);
 
   /* Chart tooltip */
-  --tooltip-bg: rgba(255, 255, 255, 0.95);
-  --tooltip-border: rgba(0, 0, 0, 0.08);
-  --tooltip-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --tooltip-label: rgba(60, 60, 67, 0.5);
-
-  /* Ambient orbs */
-  --orb-1: rgba(16, 185, 129, 0.04);
-  --orb-2: rgba(59, 130, 246, 0.03);
-  --orb-3: rgba(139, 92, 246, 0.03);
+  --tooltip-bg: rgba(255, 255, 255, 0.92);
+  --tooltip-border: rgba(180, 130, 130, 0.2);
+  --tooltip-shadow: 0 8px 32px rgba(139, 58, 74, 0.12);
+  --tooltip-label: #6B5B5B;
 
   /* Modal & overlay */
   --overlay-bg: rgba(0, 0, 0, 0.3);
-  --modal-bg: #FFFFFF;
+  --modal-bg: rgba(255, 255, 255, 0.85);
 
   /* Icon bg opacity */
   --icon-bg-opacity: 0.1;
 
   /* Glow intensity */
-  --glow-intensity: 0.15;
+  --glow-intensity: 0.2;
 
   /* Nav active indicator */
-  --nav-active-color: #2AC956;
-}
+  --nav-active-color: #FF2D55;
 
-/* ===== Dark mode ===== */
-.dark {
-  --bg-primary: #000000;
-  --bg-secondary: #1C1C1E;
-  --bg-tertiary: #2C2C2E;
-  --bg-grouped: #000000;
-  --bg-nav: rgba(22, 22, 24, 0.88);
-  --bg-input: rgba(118, 118, 128, 0.12);
-  --bg-hover: rgba(255, 255, 255, 0.04);
-  --bg-active: rgba(255, 255, 255, 0.08);
-
-  /* Glass */
-  --glass-bg: rgba(44, 44, 46, 0.65);
-  --glass-bg-subtle: rgba(44, 44, 46, 0.45);
-  --glass-bg-elevated: rgba(58, 58, 60, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-hover: rgba(255, 255, 255, 0.14);
-  --glass-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
-  --glass-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
-  --glass-inset: inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
-
-  /* Text */
-  --text-primary: #F5F5F7;
-  --text-secondary: rgba(235, 235, 245, 0.6);
-  --text-tertiary: rgba(235, 235, 245, 0.3);
-  --text-quaternary: rgba(235, 235, 245, 0.18);
-  --text-on-color: #FFFFFF;
-
-  /* Borders & separators */
-  --border-default: rgba(255, 255, 255, 0.08);
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --separator: rgba(84, 84, 88, 0.65);
-
-  /* Button */
-  --btn-primary-bg: linear-gradient(135deg, #10B981, #059669);
-  --btn-primary-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
-
-  /* Scrollbar */
-  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
-
-  /* Chart tooltip */
-  --tooltip-bg: rgba(30, 30, 32, 0.95);
-  --tooltip-border: rgba(255, 255, 255, 0.1);
-  --tooltip-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --tooltip-label: rgba(235, 235, 245, 0.5);
-
-  /* Ambient orbs */
-  --orb-1: rgba(16, 185, 129, 0.06);
-  --orb-2: rgba(59, 130, 246, 0.04);
-  --orb-3: rgba(139, 92, 246, 0.04);
-
-  /* Modal & overlay */
-  --overlay-bg: rgba(0, 0, 0, 0.5);
-  --modal-bg: #1C1C1E;
-
-  /* Icon bg opacity */
-  --icon-bg-opacity: 0.08;
-
-  /* Glow intensity */
-  --glow-intensity: 0.3;
-
-  /* Nav active indicator */
-  --nav-active-color: #2AC956;
+  /* Days */
+  --day-bg: rgba(255, 255, 255, 0.5);
+  --day-border: rgba(180, 130, 130, 0.3);
+  --day-active-bg: rgba(255, 45, 85, 0.1);
+  --day-active-border: #FF2D55;
 }
 
 @layer base {
@@ -157,77 +103,65 @@
   }
 
   body {
-    background: var(--bg-primary);
+    background: linear-gradient(180deg, #FFFFFF 0%, #D4A0A0 50%, #8B3A4A 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     letter-spacing: -0.01em;
-    transition: background 0.4s ease, color 0.3s ease;
-  }
-
-  /* Ambient orbs via pseudo-element on body (dark mode only, subtle in light) */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 50%, var(--orb-1) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, var(--orb-2) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 80%, var(--orb-3) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
+    min-height: 100vh;
   }
 }
 
-/* ========== Glass layers (iOS style) ========== */
+/* ========== Glass layers (light glassmorphism) ========== */
 @layer components {
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 0.5px solid var(--glass-border);
-    border-radius: 16px;
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
     box-shadow: var(--glass-shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-subtle {
     background: var(--glass-bg-subtle);
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-    border: 0.5px solid var(--glass-border);
-    border-radius: 12px;
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 14px;
     box-shadow: var(--glass-inset);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-elevated {
     background: var(--glass-bg-elevated);
-    backdrop-filter: blur(32px) saturate(190%);
-    -webkit-backdrop-filter: blur(32px) saturate(190%);
-    border: 0.5px solid var(--glass-border);
-    border-radius: 20px;
+    backdrop-filter: blur(50px) saturate(190%);
+    -webkit-backdrop-filter: blur(50px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
     box-shadow: var(--glass-shadow-elevated);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Legacy .card maps to glass */
   .card {
     @apply glass p-5;
   }
 
   /* ========== Buttons ========== */
   .btn-primary {
-    background: linear-gradient(135deg, #10B981, #059669);
+    background: #FF2D55;
     color: white;
     font-weight: 600;
-    padding: 10px 24px;
+    padding: 14px 24px;
     border-radius: 14px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--btn-primary-shadow);
+    box-shadow: 0 4px 14px rgba(255, 45, 85, 0.25);
+    font-size: 16px;
   }
   .btn-primary:hover {
     filter: brightness(1.08);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+    box-shadow: 0 6px 20px rgba(255, 45, 85, 0.35);
   }
   .btn-primary:active {
     transform: scale(0.98);
@@ -241,10 +175,10 @@
   }
 
   .btn-secondary {
-    background: var(--glass-bg-subtle);
+    background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 0.5px solid var(--glass-border);
+    border: 1px solid rgba(180, 130, 130, 0.2);
     color: var(--text-secondary);
     font-weight: 500;
     padding: 10px 20px;
@@ -252,7 +186,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-secondary:hover {
-    background: var(--bg-active);
+    background: rgba(255, 255, 255, 0.7);
     transform: translateY(-1px);
   }
   .btn-secondary:active {
@@ -261,20 +195,21 @@
 
   /* ========== Inputs ========== */
   .input-field {
-    background: var(--bg-input);
-    border: 0.5px solid var(--border-default);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
-    padding: 12px 16px;
-    color: var(--text-primary);
+    padding: 14px 16px;
+    color: #1A1A1A;
     width: 100%;
     outline: none;
+    font-size: 16px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .input-field::placeholder { color: var(--text-tertiary); }
   .input-field:focus {
-    border-color: rgba(16, 185, 129, 0.5);
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-    background: var(--bg-input);
+    border-color: #FF2D55;
+    box-shadow: 0 0 0 3px rgba(255, 45, 85, 0.1);
+    background: rgba(0, 0, 0, 0.04);
   }
 
   .label {
@@ -285,7 +220,7 @@
     margin-bottom: 6px;
   }
 
-  /* ========== iOS-style text utilities ========== */
+  /* ========== Text utilities ========== */
   .text-primary { color: var(--text-primary) !important; }
   .text-secondary { color: var(--text-secondary) !important; }
   .text-tertiary { color: var(--text-tertiary) !important; }
@@ -308,11 +243,11 @@
   letter-spacing: -0.03em;
 }
 
-.num-glow-orange { text-shadow: 0 0 20px rgba(255, 159, 10, var(--glow-intensity)); }
-.num-glow-green  { text-shadow: 0 0 20px rgba(48, 209, 88, var(--glow-intensity)); }
-.num-glow-red    { text-shadow: 0 0 20px rgba(255, 107, 107, var(--glow-intensity)); }
-.num-glow-purple { text-shadow: 0 0 20px rgba(142, 138, 255, var(--glow-intensity)); }
-.num-glow-blue   { text-shadow: 0 0 20px rgba(100, 210, 255, var(--glow-intensity)); }
+.num-glow-orange { text-shadow: 0 0 20px rgba(255, 149, 0, var(--glow-intensity)); }
+.num-glow-green  { text-shadow: 0 0 20px rgba(42, 201, 86, var(--glow-intensity)); }
+.num-glow-red    { text-shadow: 0 0 20px rgba(255, 45, 85, var(--glow-intensity)); }
+.num-glow-purple { text-shadow: 0 0 20px rgba(94, 92, 230, var(--glow-intensity)); }
+.num-glow-blue   { text-shadow: 0 0 20px rgba(50, 173, 230, var(--glow-intensity)); }
 .num-glow-pink   { text-shadow: 0 0 20px rgba(255, 55, 95, var(--glow-intensity)); }
 .num-glow-teal   { text-shadow: 0 0 20px rgba(0, 199, 190, var(--glow-intensity)); }
 
@@ -358,15 +293,19 @@
   animation: springIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ========== Smooth theme transition ========== */
-* {
-  transition-property: background-color, border-color, box-shadow;
-  transition-duration: 0.3s;
-  transition-timing-function: ease;
+/* ========== Bottom Sheet animations ========== */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
-/* Exclude elements that have their own transition */
-.glass, .glass-subtle, .glass-elevated, .btn-primary, .btn-secondary, .input-field,
-a, button, [class*="transition"] {
-  transition-property: all;
+@keyframes slideDown {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+/* ========== Activity Rings ========== */
+@keyframes ringDraw {
+  from { stroke-dashoffset: var(--ring-circumference); }
+  to { stroke-dashoffset: var(--ring-offset); }
 }

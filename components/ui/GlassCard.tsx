@@ -12,13 +12,13 @@ interface GlassCardProps {
 }
 
 const glowColors: Record<string, string> = {
-  emerald: 'rgba(16,185,129,0.15)',
-  orange: 'rgba(255,159,10,0.15)',
-  purple: 'rgba(142,138,255,0.15)',
-  blue: 'rgba(100,210,255,0.15)',
-  pink: 'rgba(255,55,95,0.15)',
-  red: 'rgba(255,107,107,0.15)',
-  teal: 'rgba(0,199,190,0.15)',
+  emerald: 'rgba(42,201,86,0.12)',
+  orange: 'rgba(255,149,0,0.12)',
+  purple: 'rgba(94,92,230,0.12)',
+  blue: 'rgba(50,173,230,0.12)',
+  pink: 'rgba(255,45,85,0.12)',
+  red: 'rgba(255,45,85,0.12)',
+  teal: 'rgba(0,199,190,0.12)',
 };
 
 export default function GlassCard({ children, className = '', style, hover = false, glow, onClick }: GlassCardProps) {

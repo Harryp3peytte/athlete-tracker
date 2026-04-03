@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { User, Moon, Sun, LogOut, Target, Ruler, Activity, Save, Bell } from 'lucide-react';
+import { User, LogOut, Target, Ruler, Activity, Save, Bell } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useTheme } from '@/hooks/useTheme';
 import { useNotifications } from '@/hooks/useNotifications';
 import GlassCard from '@/components/ui/GlassCard';
 import TrendChart from '@/components/charts/TrendChart';
@@ -28,7 +27,6 @@ const NOTIF_LABELS: Record<string, { icon: string; label: string }> = {
 
 export default function ProfilePage() {
   const { signOut } = useAuth();
-  const { dark, toggle } = useTheme();
   const [athlete, setAthlete] = useState<Athlete | null>(null);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name: '', age: '', height_cm: '', gender: 'male', daily_calorie_target: '', base_metabolism: '' });
@@ -71,7 +69,6 @@ export default function ProfilePage() {
       }),
     });
     setEditing(false);
-    // Refresh
     const res = await fetch('/api/auth/complete-profile');
     setAthlete(await res.json());
   };
@@ -80,22 +77,11 @@ export default function ProfilePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="title-apple flex items-center gap-2">
-          <span
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: '#8E8AFF15' }}
-          >
-            <User size={20} style={{ color: '#8E8AFF' }} />
+          <span className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#5E5CE615' }}>
+            <User size={20} style={{ color: '#5E5CE6' }} />
           </span>
           Profil
         </h1>
-        <button
-          onClick={toggle}
-          className="p-2 glass-subtle rounded-xl transition-colors"
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
-          onMouseLeave={e => (e.currentTarget.style.background = '')}
-        >
-          {dark ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} style={{ color: 'var(--text-secondary)' }} />}
-        </button>
       </div>
 
       {athlete && (
@@ -104,13 +90,13 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold"
-                style={{ background: 'linear-gradient(135deg, #10B981, #8E8AFF)', color: '#fff' }}
+                style={{ background: 'linear-gradient(135deg, #FF2D55, #FF6B8A)', color: '#fff' }}
               >
                 {(athlete.name || '?').charAt(0)}
               </div>
               <div>
-                <h2 className="text-xl font-bold">{athlete.name}</h2>
-                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{athlete.gender} | {athlete.age || '?'} ans</p>
+                <h2 className="text-xl font-bold" style={{ color: '#1A1A1A' }}>{athlete.name}</h2>
+                <p className="text-xs" style={{ color: '#9B8A8A' }}>{athlete.gender} | {athlete.age || '?'} ans</p>
               </div>
             </div>
             <button onClick={() => setEditing(!editing)} className="btn-secondary text-sm">
@@ -121,23 +107,23 @@ export default function ProfilePage() {
           {!editing ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="glass-subtle rounded-xl p-3 text-center">
-                <Ruler size={16} className="text-blue-400 mx-auto mb-1" />
-                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Taille</div>
-                <div className="text-sm font-medium">{athlete.height_cm ? `${athlete.height_cm} cm` : '-'}</div>
+                <Ruler size={16} style={{ color: '#32ADE6' }} className="mx-auto mb-1" />
+                <div className="text-xs" style={{ color: '#6B5B5B' }}>Taille</div>
+                <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.height_cm ? `${athlete.height_cm} cm` : '-'}</div>
               </div>
               <div className="glass-subtle rounded-xl p-3 text-center">
                 <Target size={16} className="mx-auto mb-1" style={{ color: '#2AC956' }} />
-                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Objectif cal.</div>
-                <div className="text-sm font-medium">{athlete.daily_calorie_target || '-'} kcal</div>
+                <div className="text-xs" style={{ color: '#6B5B5B' }}>Objectif cal.</div>
+                <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.daily_calorie_target || '-'} kcal</div>
               </div>
               <div className="glass-subtle rounded-xl p-3 text-center">
-                <Activity size={16} className="mx-auto mb-1" style={{ color: '#8E8AFF' }} />
-                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Métabolisme</div>
-                <div className="text-sm font-medium">{athlete.base_metabolism || '-'} kcal</div>
+                <Activity size={16} className="mx-auto mb-1" style={{ color: '#5E5CE6' }} />
+                <div className="text-xs" style={{ color: '#6B5B5B' }}>Métabolisme</div>
+                <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.base_metabolism || '-'} kcal</div>
               </div>
               <div className="glass-subtle rounded-xl p-3 text-center">
-                <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Genre</div>
-                <div className="text-sm font-medium capitalize">{athlete.gender || '-'}</div>
+                <div className="text-xs mt-1" style={{ color: '#6B5B5B' }}>Genre</div>
+                <div className="text-sm font-medium capitalize" style={{ color: '#1A1A1A' }}>{athlete.gender || '-'}</div>
               </div>
             </div>
           ) : (
@@ -167,9 +153,7 @@ export default function ProfilePage() {
 
       {deficitData.length > 0 && (
         <GlassCard>
-          <h3 className="section-header mb-3">
-            Déficit calorique — 30 jours
-          </h3>
+          <h3 className="section-header mb-3">Déficit calorique — 30 jours</h3>
           <TrendChart
             data={deficitData.map(d => ({ date: d.date, value: d.net }))}
             color="#3B82F6"
@@ -181,25 +165,22 @@ export default function ProfilePage() {
         </GlassCard>
       )}
 
-      {/* Notifications */}
       <GlassCard>
         <div className="flex items-center justify-between mb-4">
           <h3 className="section-header flex items-center gap-2">
-            <Bell size={14} style={{ color: '#FF9F0A' }} /> Notifications
+            <Bell size={14} style={{ color: '#FF9500' }} /> Notifications
           </h3>
           {!isSubscribed && (
             <button
               onClick={subscribe}
               className="text-xs px-3 py-1 rounded-lg transition-colors"
-              style={{ background: '#FF9F0A20', color: '#FF9F0A' }}
+              style={{ background: '#FF950020', color: '#FF9500' }}
             >
               {permission === 'denied' ? 'Bloqué' : 'Activer les push'}
             </button>
           )}
           {isSubscribed && (
-            <span className="text-xs px-3 py-1 rounded-lg" style={{ background: '#2AC95620', color: '#2AC956' }}>
-              Activé
-            </span>
+            <span className="text-xs px-3 py-1 rounded-lg" style={{ background: '#2AC95620', color: '#2AC956' }}>Activé</span>
           )}
         </div>
         <div className="space-y-2">
@@ -210,11 +191,11 @@ export default function ProfilePage() {
               <div key={pref.reminder_type} className="flex items-center justify-between glass-subtle rounded-xl px-4 py-3">
                 <div className="flex items-center gap-3">
                   <span className="text-lg">{info.icon}</span>
-                  <span className="text-sm">{info.label}</span>
+                  <span className="text-sm" style={{ color: '#1A1A1A' }}>{info.label}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   {pref.reminder_type === 'hydration' ? (
-                    <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+                    <span className="text-[11px]" style={{ color: '#9B8A8A' }}>
                       Toutes les {(pref.interval_minutes || 120) / 60}h
                     </span>
                   ) : pref.time ? (
@@ -245,11 +226,11 @@ export default function ProfilePage() {
                       setNotifPrefs(prev => prev.map(p => p.reminder_type === pref.reminder_type ? { ...p, enabled: newEnabled } : p));
                     }}
                     className="w-10 h-6 rounded-full relative transition-colors"
-                    style={{ background: pref.enabled ? '#2AC956' : 'var(--bg-input)' }}
+                    style={{ background: pref.enabled ? '#2AC956' : 'rgba(0,0,0,0.06)' }}
                   >
                     <div
                       className="w-4 h-4 rounded-full bg-white absolute top-1 transition-all"
-                      style={{ left: pref.enabled ? '22px' : '4px' }}
+                      style={{ left: pref.enabled ? '22px' : '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
                     />
                   </button>
                 </div>
@@ -261,7 +242,8 @@ export default function ProfilePage() {
 
       <button
         onClick={signOut}
-        className="glass-subtle w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[#FF6B6B] hover:bg-[#FF6B6B]/10 transition-colors"
+        className="glass-subtle w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-colors"
+        style={{ color: '#FF2D55' }}
       >
         <LogOut size={18} /> Se déconnecter
       </button>
