@@ -58,18 +58,18 @@ export default function GroupDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/groups" className="p-2 hover:bg-white/[0.06] rounded-lg transition-colors">
+        <Link href="/groups" className="p-2 rounded-lg transition-colors" onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')} onMouseLeave={e => (e.currentTarget.style.background = '')}>
           <ArrowLeft size={20} />
         </Link>
         <div>
           <h1 className="title-apple">{group.name}</h1>
-          <p className="text-white/40 text-sm">{group.members.length} membres</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{group.members.length} membres</p>
         </div>
       </div>
 
       {/* Members */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Membres</h3>
+        <h3 className="section-header mb-3">Membres</h3>
         <div className="flex flex-wrap gap-3">
           {group.members.map(m => (
             <div key={m.id} className="flex items-center gap-2 glass-subtle rounded-xl px-3 py-2">
@@ -88,7 +88,7 @@ export default function GroupDetailPage() {
 
       {/* Leaderboard */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-4 flex items-center gap-2">
+        <h3 className="section-header mb-4 flex items-center gap-2">
           <Trophy size={16} className="text-amber-400" /> Classement hebdomadaire
         </h3>
 
@@ -100,7 +100,7 @@ export default function GroupDetailPage() {
               className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
               style={metric === key
                 ? { background: '#2AC956', color: '#fff' }
-                : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+                : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
               }
             >
               {label}
@@ -119,7 +119,7 @@ export default function GroupDetailPage() {
                     className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold mt-2"
                     style={i === 0
                       ? { background: 'rgba(251,191,36,0.10)', color: '#FBBF24' }
-                      : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+                      : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
                     }
                   >
                     {entry.athlete.name.charAt(0)}
@@ -138,7 +138,7 @@ export default function GroupDetailPage() {
               {leaderboard.map((entry, i) => (
                 <div key={entry.athlete.id} className="flex items-center justify-between glass-subtle rounded-xl px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <span className={`w-6 text-center font-bold text-sm ${i < 3 ? PODIUM_COLORS[i] : 'text-white/30'}`}>{i + 1}</span>
+                    <span className={`w-6 text-center font-bold text-sm ${i < 3 ? PODIUM_COLORS[i] : ''}`} style={i >= 3 ? { color: 'var(--text-tertiary)' } : undefined}>{i + 1}</span>
                     <span className="text-sm font-medium">{entry.athlete.name}</span>
                   </div>
                   <span className="text-sm font-semibold">{entry.value} {METRIC_UNITS[metric]}</span>

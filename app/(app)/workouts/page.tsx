@@ -355,24 +355,24 @@ export default function WorkoutsPage() {
           </h1>
           <button
             onClick={() => { if (confirm('Abandonner la séance ?')) setActiveSession(null); }}
-            className="text-white/40 hover:text-[#FF6B6B] transition-colors"
+            className="text-secondary hover:text-[#FF6B6B] transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
-        <p className="text-white/40 text-sm">Remplis les poids utilisés pour chaque exercice</p>
+        <p className="text-secondary text-sm">Remplis les poids utilisés pour chaque exercice</p>
 
         {activeSession.exercises.map((ex, i) => (
           <GlassCard key={i}>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-semibold">{ex.exercise_name}</span>
-                <span className="text-white/40 text-sm">{ex.sets} x {ex.reps}</span>
+                <span className="text-secondary text-sm">{ex.sets} x {ex.reps}</span>
               </div>
 
               <div>
-                <label className="text-xs text-white/40">Poids (kg)</label>
+                <label className="text-xs text-secondary">Poids (kg)</label>
                 <input
                   type="number"
                   step="0.5"
@@ -387,7 +387,7 @@ export default function WorkoutsPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-white/30">
+              <div className="flex items-center gap-4 text-xs text-tertiary">
                 <div className="flex items-center gap-2">
                   <label>Séries:</label>
                   <input
@@ -417,7 +417,7 @@ export default function WorkoutsPage() {
               </div>
 
               {ex.lastWeight && (
-                <div className="text-xs text-white/30 italic">
+                <div className="text-xs text-tertiary italic">
                   Dernier : {ex.lastWeight} kg
                   {ex.lastDate && ` le ${new Date(ex.lastDate + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`}
                 </div>
@@ -445,22 +445,22 @@ export default function WorkoutsPage() {
         <div className="text-center space-y-2">
           <div className="text-4xl">&#127942;</div>
           <h1 className="title-apple">Séance terminée !</h1>
-          <p className="text-white/40">{sessionSummary.name}</p>
+          <p className="text-secondary">{sessionSummary.name}</p>
         </div>
 
         <GlassCard>
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Résumé</h3>
+          <h3 className="section-header mb-3">Résumé</h3>
           <div className="space-y-2">
             {sessionSummary.exercises.map((ex, i) => (
               <div key={i} className="flex items-center justify-between glass-subtle rounded-lg px-3 py-2">
                 <span className="text-sm">{ex.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-white/40">
+                  <span className="text-sm text-secondary">
                     {ex.sets}x{ex.reps} {ex.weight != null ? `@ ${ex.weight}kg` : ''}
                   </span>
                   {ex.diff === 'up' && <ChevronUp size={14} className="text-[#2AC956]" />}
                   {ex.diff === 'down' && <ChevronDown size={14} className="text-[#FF6B6B]" />}
-                  {ex.diff === 'same' && <Minus size={14} className="text-white/30" />}
+                  {ex.diff === 'same' && <Minus size={14} className="text-tertiary" />}
                 </div>
               </div>
             ))}
@@ -506,8 +506,8 @@ export default function WorkoutsPage() {
             onClick={() => setTab(t.key)}
             className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             style={tab === t.key
-              ? { background: '#BF5AF2', color: '#fff' }
-              : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+              ? { background: '#BF5AF2', color: 'var(--text-primary)' }
+              : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
             }
           >
             {t.label}
@@ -531,7 +531,7 @@ export default function WorkoutsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="flex flex-col items-center" style={{ minWidth: 48 }}>
-                      <span className={`text-xs font-bold uppercase ${isToday ? 'text-[#BF5AF2]' : 'text-white/40'}`}>
+                      <span className={`text-xs font-bold uppercase ${isToday ? 'text-[#BF5AF2]' : 'text-secondary'}`}>
                         {dayLabel.slice(0, 3)}
                       </span>
                       {isToday && <span className="text-[8px] text-[#BF5AF2] mt-0.5">Aujourd&apos;hui</span>}
@@ -544,12 +544,12 @@ export default function WorkoutsPage() {
                       {tmpl ? (
                         <div>
                           <span className="font-medium text-sm truncate block">{tmpl.name}</span>
-                          <span className="text-xs text-white/30">
+                          <span className="text-xs text-tertiary">
                             {(tmpl.workout_template_exercises || []).length} exercice{(tmpl.workout_template_exercises || []).length > 1 ? 's' : ''}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-white/20 text-sm italic">Repos</span>
+                        <span className="text-quaternary text-sm italic">Repos</span>
                       )}
                     </div>
                   </div>
@@ -577,7 +577,7 @@ export default function WorkoutsPage() {
         <div className="space-y-3">
           {templates.length === 0 && (
             <GlassCard>
-              <p className="text-white/40 text-center py-8">
+              <p className="text-secondary text-center py-8">
                 Aucune séance type créée. Crée ta première séance type !
               </p>
             </GlassCard>
@@ -589,21 +589,21 @@ export default function WorkoutsPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => openEditTemplate(t)}
-                    className="text-white/30 hover:text-[#BF5AF2] transition-colors p-1"
+                    className="text-tertiary hover:text-[#BF5AF2] transition-colors p-1"
                     title="Modifier"
                   >
                     <Edit3 size={14} />
                   </button>
                   <button
                     onClick={() => handleDuplicateTemplate(t)}
-                    className="text-white/30 hover:text-[#2AC956] transition-colors p-1"
+                    className="text-tertiary hover:text-[#2AC956] transition-colors p-1"
                     title="Dupliquer"
                   >
                     <Plus size={14} />
                   </button>
                   <button
                     onClick={() => handleDeleteTemplate(t.id)}
-                    className="text-white/30 hover:text-[#FF6B6B] transition-colors p-1"
+                    className="text-tertiary hover:text-[#FF6B6B] transition-colors p-1"
                     title="Supprimer"
                   >
                     <Trash2 size={14} />
@@ -617,7 +617,7 @@ export default function WorkoutsPage() {
                     .map(e => (
                       <div key={e.id} className="flex justify-between text-sm glass-subtle rounded-lg px-3 py-2">
                         <span>{e.exercise_name}</span>
-                        <span className="text-white/40">{e.sets} x {e.reps}</span>
+                        <span className="text-secondary">{e.sets} x {e.reps}</span>
                       </div>
                     ))}
                 </div>
@@ -632,7 +632,7 @@ export default function WorkoutsPage() {
         <div className="space-y-3">
           {sessions.length === 0 && (
             <GlassCard>
-              <p className="text-white/40 text-center py-8">Aucune séance enregistrée</p>
+              <p className="text-secondary text-center py-8">Aucune séance enregistrée</p>
             </GlassCard>
           )}
           {sessions.map(s => (
@@ -640,7 +640,7 @@ export default function WorkoutsPage() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <span className="font-semibold">{s.name || 'Séance'}</span>
-                  <span className="text-xs text-white/30 ml-2">
+                  <span className="text-xs text-tertiary ml-2">
                     {new Date(s.date + 'T12:00:00').toLocaleDateString('fr-FR', {
                       weekday: 'short', day: 'numeric', month: 'short',
                     })}
@@ -648,7 +648,7 @@ export default function WorkoutsPage() {
                 </div>
                 <button
                   onClick={() => handleDeleteSession(s.id)}
-                  className="text-white/20 hover:text-[#FF6B6B] transition-colors"
+                  className="text-quaternary hover:text-[#FF6B6B] transition-colors"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -658,7 +658,7 @@ export default function WorkoutsPage() {
                   {s.workout_exercises.map(e => (
                     <div key={e.id} className="flex justify-between text-sm glass-subtle rounded-lg px-3 py-2">
                       <span>{e.exercise_name}</span>
-                      <span className="text-white/40">
+                      <span className="text-secondary">
                         {e.sets}x{e.reps}
                         {e.weight_kg != null && ` @ ${e.weight_kg}kg`}
                       </span>
@@ -697,7 +697,7 @@ export default function WorkoutsPage() {
                     type="button"
                     onClick={() => moveExercise(i, 'up')}
                     disabled={i === 0}
-                    className="text-white/20 hover:text-white/60 disabled:opacity-20"
+                    className="text-quaternary hover:text-secondary disabled:opacity-20"
                   >
                     <ChevronUp size={12} />
                   </button>
@@ -705,7 +705,7 @@ export default function WorkoutsPage() {
                     type="button"
                     onClick={() => moveExercise(i, 'down')}
                     disabled={i === templateForm.exercises.length - 1}
-                    className="text-white/20 hover:text-white/60 disabled:opacity-20"
+                    className="text-quaternary hover:text-secondary disabled:opacity-20"
                   >
                     <ChevronDown size={12} />
                   </button>
@@ -745,7 +745,7 @@ export default function WorkoutsPage() {
                 <button
                   type="button"
                   onClick={() => removeTemplateExercise(i)}
-                  className="text-white/20 hover:text-[#FF6B6B] p-1"
+                  className="text-quaternary hover:text-[#FF6B6B] p-1"
                 >
                   <X size={14} />
                 </button>
@@ -776,7 +776,7 @@ export default function WorkoutsPage() {
         <div className="space-y-2">
           <button
             onClick={() => assignModal !== null && handleAssign(assignModal, null)}
-            className="w-full text-left glass-subtle rounded-lg px-4 py-3 text-white/40 hover:text-white/60 transition-colors"
+            className="w-full text-left glass-subtle rounded-lg px-4 py-3 text-secondary hover:text-primary transition-colors"
           >
             Repos (aucune séance)
           </button>
@@ -787,13 +787,13 @@ export default function WorkoutsPage() {
               className="w-full text-left glass-subtle rounded-lg px-4 py-3 hover:ring-1 hover:ring-[#BF5AF2] transition-all"
             >
               <span className="font-medium">{t.name}</span>
-              <span className="text-xs text-white/30 ml-2">
+              <span className="text-xs text-tertiary ml-2">
                 {(t.workout_template_exercises || []).length} exercice{(t.workout_template_exercises || []).length > 1 ? 's' : ''}
               </span>
             </button>
           ))}
           {templates.length === 0 && (
-            <p className="text-white/30 text-center py-4 text-sm">
+            <p className="text-tertiary text-center py-4 text-sm">
               Aucune séance type. Crée-en une d&apos;abord dans l&apos;onglet &quot;Séances types&quot;.
             </p>
           )}

@@ -90,9 +90,11 @@ export default function ProfilePage() {
         </h1>
         <button
           onClick={toggle}
-          className="p-2 glass-subtle rounded-xl hover:bg-white/[0.06] transition-colors"
+          className="p-2 glass-subtle rounded-xl transition-colors"
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
+          onMouseLeave={e => (e.currentTarget.style.background = '')}
         >
-          {dark ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} className="text-white/40" />}
+          {dark ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} style={{ color: 'var(--text-secondary)' }} />}
         </button>
       </div>
 
@@ -108,7 +110,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold">{athlete.name}</h2>
-                <p className="text-xs text-white/30">{athlete.gender} | {athlete.age || '?'} ans</p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{athlete.gender} | {athlete.age || '?'} ans</p>
               </div>
             </div>
             <button onClick={() => setEditing(!editing)} className="btn-secondary text-sm">
@@ -120,21 +122,21 @@ export default function ProfilePage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="glass-subtle rounded-xl p-3 text-center">
                 <Ruler size={16} className="text-blue-400 mx-auto mb-1" />
-                <div className="text-xs text-white/40">Taille</div>
+                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Taille</div>
                 <div className="text-sm font-medium">{athlete.height_cm ? `${athlete.height_cm} cm` : '-'}</div>
               </div>
               <div className="glass-subtle rounded-xl p-3 text-center">
                 <Target size={16} className="mx-auto mb-1" style={{ color: '#2AC956' }} />
-                <div className="text-xs text-white/40">Objectif cal.</div>
+                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Objectif cal.</div>
                 <div className="text-sm font-medium">{athlete.daily_calorie_target || '-'} kcal</div>
               </div>
               <div className="glass-subtle rounded-xl p-3 text-center">
                 <Activity size={16} className="mx-auto mb-1" style={{ color: '#8E8AFF' }} />
-                <div className="text-xs text-white/40">Métabolisme</div>
+                <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Métabolisme</div>
                 <div className="text-sm font-medium">{athlete.base_metabolism || '-'} kcal</div>
               </div>
               <div className="glass-subtle rounded-xl p-3 text-center">
-                <div className="text-xs text-white/40 mt-1">Genre</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Genre</div>
                 <div className="text-sm font-medium capitalize">{athlete.gender || '-'}</div>
               </div>
             </div>
@@ -165,7 +167,7 @@ export default function ProfilePage() {
 
       {deficitData.length > 0 && (
         <GlassCard>
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+          <h3 className="section-header mb-3">
             Déficit calorique — 30 jours
           </h3>
           <TrendChart
@@ -182,7 +184,7 @@ export default function ProfilePage() {
       {/* Notifications */}
       <GlassCard>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider flex items-center gap-2">
+          <h3 className="section-header flex items-center gap-2">
             <Bell size={14} style={{ color: '#FF9F0A' }} /> Notifications
           </h3>
           {!isSubscribed && (
@@ -212,7 +214,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {pref.reminder_type === 'hydration' ? (
-                    <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
                       Toutes les {(pref.interval_minutes || 120) / 60}h
                     </span>
                   ) : pref.time ? (
@@ -243,7 +245,7 @@ export default function ProfilePage() {
                       setNotifPrefs(prev => prev.map(p => p.reminder_type === pref.reminder_type ? { ...p, enabled: newEnabled } : p));
                     }}
                     className="w-10 h-6 rounded-full relative transition-colors"
-                    style={{ background: pref.enabled ? '#2AC956' : 'rgba(255,255,255,0.1)' }}
+                    style={{ background: pref.enabled ? '#2AC956' : 'var(--bg-input)' }}
                   >
                     <div
                       className="w-4 h-4 rounded-full bg-white absolute top-1 transition-all"

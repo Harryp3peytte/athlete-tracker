@@ -59,18 +59,18 @@ export default function WorkoutCalendar() {
     <div className="relative">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <h3 className="text-[10px] font-semibold uppercase tracking-widest section-header" style={{ color: 'var(--text-secondary)' }}>
           Calendrier entraînements
         </h3>
         <div className="flex items-center gap-2">
           <button onClick={prevMonth} className="p-1 rounded-lg transition-colors hover:bg-white/[0.06]">
-            <ChevronLeft size={16} style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <ChevronLeft size={16} style={{ color: 'var(--text-secondary)' }} />
           </button>
-          <span className="text-xs font-medium capitalize min-w-[120px] text-center" style={{ color: 'rgba(255,255,255,0.6)' }}>
+          <span className="text-xs font-medium capitalize min-w-[120px] text-center" style={{ color: 'var(--text-secondary)' }}>
             {monthLabel}
           </span>
           <button onClick={nextMonth} className="p-1 rounded-lg transition-colors hover:bg-white/[0.06]">
-            <ChevronRight size={16} style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <ChevronRight size={16} style={{ color: 'var(--text-secondary)' }} />
           </button>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function WorkoutCalendar() {
       {/* Weekday headers */}
       <div className="grid grid-cols-7 gap-1 mb-1">
         {WEEKDAYS.map(d => (
-          <div key={d} className="text-center text-[10px] font-medium py-1" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <div key={d} className="text-center text-[10px] font-medium py-1" style={{ color: 'var(--text-tertiary)' }}>
             {d}
           </div>
         ))}
@@ -108,7 +108,7 @@ export default function WorkoutCalendar() {
               onMouseLeave={() => setHoveredDay(null)}
             >
               <span className="text-xs" style={{
-                color: isToday ? '#2AC956' : activity ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.25)',
+                color: isToday ? '#2AC956' : activity ? 'var(--text-primary)' : 'var(--text-tertiary)',
                 fontWeight: isToday || activity ? 600 : 400,
               }}>
                 {cell.dayNum}
@@ -137,9 +137,9 @@ export default function WorkoutCalendar() {
             left: hoverPos.x,
             top: hoverPos.y - 8,
             transform: 'translate(-50%, -100%)',
-            background: 'rgba(15,23,42,0.95)',
+            background: 'var(--tooltip-bg)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '0.5px solid var(--tooltip-border)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
           }}
         >
@@ -152,11 +152,11 @@ export default function WorkoutCalendar() {
       <div className="flex gap-4 mt-3">
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full" style={{ background: '#BF5AF2' }} />
-          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>Muscu</span>
+          <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Muscu</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full" style={{ background: '#FF6B6B' }} />
-          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>Cardio</span>
+          <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Cardio</span>
         </div>
       </div>
     </div>

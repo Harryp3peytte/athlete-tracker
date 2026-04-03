@@ -127,11 +127,12 @@ export default function MealsPage() {
       <div className="flex items-center justify-center gap-4">
         <button
           onClick={() => shiftDate(-1)}
-          className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/60"
+          className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          style={{ color: 'var(--text-secondary)' }}
         >
           <ChevronLeft size={20} />
         </button>
-        <span className="font-medium capitalize text-white/80">
+        <span className="font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
           {new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', {
             weekday: 'long',
             day:     'numeric',
@@ -140,7 +141,8 @@ export default function MealsPage() {
         </span>
         <button
           onClick={() => shiftDate(1)}
-          className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/60"
+          className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          style={{ color: 'var(--text-secondary)' }}
         >
           <ChevronRight size={20} />
         </button>
@@ -150,26 +152,26 @@ export default function MealsPage() {
       <div className="grid grid-cols-4 gap-3">
         <div className="glass-subtle rounded-xl p-4 text-center">
           <div className="num-highlight text-2xl font-bold" style={{ color: '#FF9F0A' }}>{totalCal}</div>
-          <div className="text-xs text-white/40 mt-1">kcal</div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>kcal</div>
         </div>
         <div className="glass-subtle rounded-xl p-4 text-center">
           <div className="num-highlight text-2xl font-bold" style={{ color: '#2AC956' }}>{Math.round(totalP)}g</div>
-          <div className="text-xs text-white/40 mt-1">Protéines</div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Protéines</div>
         </div>
         <div className="glass-subtle rounded-xl p-4 text-center">
           <div className="num-highlight text-2xl font-bold" style={{ color: '#64D2FF' }}>{Math.round(totalC)}g</div>
-          <div className="text-xs text-white/40 mt-1">Glucides</div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Glucides</div>
         </div>
         <div className="glass-subtle rounded-xl p-4 text-center">
           <div className="num-highlight text-2xl font-bold" style={{ color: '#FF9F0A' }}>{Math.round(totalF)}g</div>
-          <div className="text-xs text-white/40 mt-1">Lipides</div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Lipides</div>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <GlassCard>
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Répartition par repas</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 section-header">Répartition par repas</h3>
           <BarChartComponent
             data={barData}
             bars={[{ dataKey: 'calories', color: '#FF9F0A', name: 'Calories (kcal)' }]}
@@ -177,7 +179,7 @@ export default function MealsPage() {
           />
         </GlassCard>
         <GlassCard>
-          <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Macronutriments</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 section-header">Macronutriments</h3>
           <MacroPieChart proteins={totalP} carbs={totalC} fats={totalF} height={220} />
         </GlassCard>
       </div>
@@ -193,7 +195,7 @@ export default function MealsPage() {
             <GlassCard key={canonical}>
               <h3
                 className="text-xs font-semibold uppercase tracking-wider mb-3"
-                style={{ color: MEAL_COLORS[canonical] ?? 'rgba(255,255,255,0.4)' }}
+                style={{ color: MEAL_COLORS[canonical] ?? 'var(--text-secondary)' }}
               >
                 {labelForCanonical(canonical)}
               </h3>
@@ -204,8 +206,8 @@ export default function MealsPage() {
                     className="glass-subtle rounded-xl flex items-center justify-between px-4 py-3"
                   >
                     <div>
-                      <span className="font-medium text-sm text-white/90">{m.description ?? '—'}</span>
-                      <div className="text-xs text-white/30 mt-0.5">
+                      <span className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{m.description ?? '—'}</span>
+                      <div className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
                         {Math.round(m.proteins)}g P &nbsp;|&nbsp;
                         {Math.round(m.carbs)}g G &nbsp;|&nbsp;
                         {Math.round(m.fats)}g L
@@ -215,7 +217,8 @@ export default function MealsPage() {
                       <span className="text-sm font-medium" style={{ color: '#FF9F0A' }}>{m.calories} kcal</span>
                       <button
                         onClick={() => handleDelete(m.id)}
-                        className="text-white/20 hover:text-[#FF6B6B] transition-colors"
+                        className="hover:text-[#FF6B6B] transition-colors"
+                        style={{ color: 'var(--text-quaternary)' }}
                       >
                         <Trash2 size={14} />
                       </button>
@@ -228,7 +231,7 @@ export default function MealsPage() {
         })}
         {meals.length === 0 && (
           <GlassCard>
-            <div className="text-white/30 text-center py-10">
+            <div className="text-center py-10" style={{ color: 'var(--text-tertiary)' }}>
               Aucun repas enregistré pour ce jour
             </div>
           </GlassCard>

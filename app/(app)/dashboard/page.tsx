@@ -32,11 +32,11 @@ const scoreBreakdown = [
 ] as const;
 
 const tooltipStyle = {
-  background: 'rgba(15,23,42,0.95)',
+  background: 'var(--tooltip-bg)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255,255,255,0.1)',
+  border: '0.5px solid var(--tooltip-border)',
   borderRadius: '12px',
-  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+  boxShadow: 'var(--tooltip-shadow)',
 };
 
 export default function DashboardPage() {
@@ -50,16 +50,15 @@ export default function DashboardPage() {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="glass h-48 animate-pulse rounded-[20px]" />
+          <div key={i} className="glass h-48 animate-pulse rounded-[16px]" />
         ))}
       </div>
     );
   }
 
   const target = data.calories.target || 2000;
-  const balance = data.calories.consumed - data.calories.burned; // positive = surplus, negative = deficit
+  const balance = data.calories.consumed - data.calories.burned;
 
-  // Format calorie trend for chart
   const calorieTrendData = (data.calorieTrend || []).map(d => ({
     date: new Date(d.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
     consumed: d.consumed,
@@ -70,8 +69,8 @@ export default function DashboardPage() {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h1 className="title-apple text-[28px] text-white">Bonjour, {data.athlete?.name || 'Athlète'} !</h1>
-        <p className="text-sm mt-1 capitalize" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <h1 className="title-apple text-[28px]" style={{ color: 'var(--text-primary)' }}>Bonjour, {data.athlete?.name || 'Athlète'} !</h1>
+        <p className="text-sm mt-1 capitalize" style={{ color: 'var(--text-tertiary)' }}>
           {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
@@ -84,32 +83,32 @@ export default function DashboardPage() {
               <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: `${color}15` }}>
                 <Icon size={18} style={{ color }} />
               </div>
-              <span className="text-[10px] font-medium" style={{ color: 'rgba(255,255,255,0.45)' }}>{label}</span>
+              <span className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
             </GlassCard>
           </Link>
         ))}
       </div>
 
-      {/* Score + Calories summary — 2 col grid */}
+      {/* Score + Calories summary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Health Score */}
         <GlassCard className="flex items-center gap-6">
           <AnimatedRing score={data.healthScore.total} gradientFrom="#2AC956" gradientTo="#00C7BE" />
           <div className="flex-1 space-y-2.5">
-            <h3 className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>Score du jour</h3>
+            <h3 className="section-header">Score du jour</h3>
             {scoreBreakdown.map(({ key, label, color, max }) => {
               const val = data.healthScore.breakdown[key];
               return (
                 <div key={key} className="flex items-center gap-2.5">
-                  <span className="text-[11px] w-20" style={{ color: 'rgba(255,255,255,0.4)' }}>{label}</span>
-                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  <span className="text-[11px] w-20" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-input)' }}>
                     <div className="h-full rounded-full" style={{
                       width: `${(val / max) * 100}%`, background: color,
                       boxShadow: `0 0 8px ${color}40`,
                       transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
                     }} />
                   </div>
-                  <span className="text-[11px] w-10 text-right" style={{ color: 'rgba(255,255,255,0.25)' }}>{val}/{max}</span>
+                  <span className="text-[11px] w-10 text-right" style={{ color: 'var(--text-tertiary)' }}>{val}/{max}</span>
                 </div>
               );
             })}
@@ -118,19 +117,19 @@ export default function DashboardPage() {
 
         {/* Today's Calories Summary */}
         <GlassCard className="space-y-4">
-          <h3 className="text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <h3 className="section-header flex items-center gap-2">
             <Flame size={14} style={{ color: '#FF6B6B' }} /> Calories aujourd&apos;hui
           </h3>
           <div className="flex items-end justify-between">
             <div>
               <div className="num-highlight num-glow-orange text-4xl" style={{ color: '#FF9F0A' }}>{data.calories.consumed}</div>
-              <div className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>kcal consommées</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>kcal consommées</div>
             </div>
             <div className="text-right space-y-1.5">
-              <div className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                 Brûlées: <span className="num-highlight num-glow-red" style={{ color: '#FF6B6B' }}>{data.calories.burned}</span>
               </div>
-              <div className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              <div className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
                 dont {data.calories.metabolism} métabolisme + {data.calories.activities} activités
               </div>
               <div className="flex items-center gap-1.5 justify-end">
@@ -149,22 +148,22 @@ export default function DashboardPage() {
             </div>
           </div>
           {/* Hydration + Wellness mini */}
-          <div className="flex gap-4 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-            <div className="flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              <Droplets size={13} style={{ color: '#64D2FF' }} /> <span className="font-semibold text-white">{data.hydration.toFixed(1)}L</span> / 2L
+          <div className="flex gap-4 pt-3" style={{ borderTop: '0.5px solid var(--separator)' }}>
+            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
+              <Droplets size={13} style={{ color: '#64D2FF' }} /> <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{data.hydration.toFixed(1)}L</span> / 2L
             </div>
             {data.wellness && (
-              <div className="flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                <Heart size={13} style={{ color: '#FF375F' }} /> Forme: <span className="font-semibold text-white">{data.wellness.form_score}/10</span>
+              <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <Heart size={13} style={{ color: '#FF375F' }} /> Forme: <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{data.wellness.form_score}/10</span>
               </div>
             )}
           </div>
         </GlassCard>
       </div>
 
-      {/* Calorie Trend Chart — full width */}
+      {/* Calorie Trend Chart */}
       <GlassCard>
-        <h3 className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <h3 className="section-header mb-4">
           Calories — 7 derniers jours
         </h3>
         {calorieTrendData.length > 0 ? (
@@ -180,10 +179,10 @@ export default function DashboardPage() {
                   <stop offset="95%" stopColor="#FF6B6B" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'rgba(255,255,255,0.5)' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+              <XAxis dataKey="date" stroke="var(--text-tertiary)" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis stroke="var(--text-tertiary)" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'var(--tooltip-label)' }} />
               <Area type="monotone" dataKey="consumed" stroke="#FF9F0A" strokeWidth={2.5} fill="url(#colorConsumed)" name="Consommées"
                 dot={{ fill: '#FF9F0A', strokeWidth: 0, r: 3 }}
                 activeDot={{ r: 6, fill: '#FF9F0A', stroke: 'rgba(255,159,10,0.3)', strokeWidth: 8 }}
@@ -192,11 +191,11 @@ export default function DashboardPage() {
                 dot={{ fill: '#FF6B6B', strokeWidth: 0, r: 3 }}
                 activeDot={{ r: 6, fill: '#FF6B6B', stroke: 'rgba(255,107,107,0.3)', strokeWidth: 8 }}
                 animationDuration={1200} />
-              <Legend formatter={(value) => <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>{value}</span>} />
+              <Legend formatter={(value) => <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{value}</span>} />
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="text-center py-12" style={{ color: 'rgba(255,255,255,0.2)' }}>Pas de données sur cette période</div>
+          <div className="text-center py-12" style={{ color: 'var(--text-tertiary)' }}>Pas de données sur cette période</div>
         )}
       </GlassCard>
 
@@ -205,11 +204,11 @@ export default function DashboardPage() {
         <WorkoutCalendar />
       </GlassCard>
 
-      {/* Weight + Sleep — 2 col */}
+      {/* Weight + Sleep */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <GlassCard>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>Poids — 7 jours</h3>
+            <h3 className="section-header">Poids — 7 jours</h3>
             {data.weight.current && (
               <span className="num-highlight num-glow-green text-xl" style={{ color: '#30D158' }}>{data.weight.current} kg</span>
             )}
@@ -217,11 +216,11 @@ export default function DashboardPage() {
           {data.weight.trend.length > 0 ? (
             <TrendChart data={data.weight.trend.map(w => ({ date: w.date, value: w.weight_kg }))}
               label="Poids (kg)" height={180} formatValue={v => `${v}kg`} color="#30D158" area />
-          ) : <div className="text-center py-8" style={{ color: 'rgba(255,255,255,0.2)' }}>Pas de données</div>}
+          ) : <div className="text-center py-8" style={{ color: 'var(--text-tertiary)' }}>Pas de données</div>}
         </GlassCard>
 
         <GlassCard>
-          <h3 className="text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2 mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <h3 className="section-header flex items-center gap-2 mb-4">
             <Moon size={14} style={{ color: '#8E8AFF' }} /> Dernière nuit
           </h3>
           {data.sleep ? (
@@ -232,11 +231,11 @@ export default function DashboardPage() {
                 Qualité: {data.sleep.quality}/10
               </span>
             </div>
-          ) : <div className="text-center py-8" style={{ color: 'rgba(255,255,255,0.2)' }}>Pas de données</div>}
+          ) : <div className="text-center py-8" style={{ color: 'var(--text-tertiary)' }}>Pas de données</div>}
 
           {data.wellness && (
-            <div className="flex items-center justify-between pt-3 mt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-              <div className="flex items-center gap-2 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}><Heart size={13} style={{ color: '#FF375F' }} /> Forme</div>
+            <div className="flex items-center justify-between pt-3 mt-4" style={{ borderTop: '0.5px solid var(--separator)' }}>
+              <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}><Heart size={13} style={{ color: '#FF375F' }} /> Forme</div>
               <span className="text-xs font-semibold" style={{ color: data.wellness.form_score >= 7 ? '#2AC956' : data.wellness.form_score >= 4 ? '#FF9F0A' : '#FF375F' }}>
                 {data.wellness.form_score}/10
               </span>
@@ -248,7 +247,7 @@ export default function DashboardPage() {
       {/* Activities */}
       {(data.cardioActivities.length > 0 || data.workoutSessions.length > 0) && (
         <GlassCard>
-          <h3 className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.35)' }}>Activités du jour</h3>
+          <h3 className="section-header mb-3">Activités du jour</h3>
           <div className="space-y-2">
             {data.cardioActivities.map(a => (
               <div key={a.id} className="flex items-center justify-between glass-subtle px-4 py-3 rounded-xl">
@@ -257,8 +256,8 @@ export default function DashboardPage() {
                     <Dumbbell size={14} style={{ color: '#FF6B6B' }} />
                   </div>
                   <div>
-                    <span className="text-sm font-medium capitalize">{a.activity_type}</span>
-                    <span className="text-[11px] ml-2" style={{ color: 'rgba(255,255,255,0.3)' }}>{a.duration_minutes} min</span>
+                    <span className="text-sm font-medium capitalize" style={{ color: 'var(--text-primary)' }}>{a.activity_type}</span>
+                    <span className="text-[11px] ml-2" style={{ color: 'var(--text-tertiary)' }}>{a.duration_minutes} min</span>
                   </div>
                 </div>
                 <span className="text-sm font-semibold" style={{ color: '#FF6B6B' }}>{a.calories_burned} kcal</span>
@@ -270,9 +269,9 @@ export default function DashboardPage() {
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#BF5AF215' }}>
                     <Dumbbell size={14} style={{ color: '#BF5AF2' }} />
                   </div>
-                  <span className="text-sm font-medium">{w.name || 'Séance muscu'}</span>
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{w.name || 'Séance muscu'}</span>
                 </div>
-                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{(w.workout_exercises || []).length} exercices</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{(w.workout_exercises || []).length} exercices</span>
               </div>
             ))}
           </div>

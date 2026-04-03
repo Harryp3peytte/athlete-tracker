@@ -196,7 +196,7 @@ export default function ActivitiesPage() {
             style={
               period === p
                 ? { background: '#FF6B6B', color: '#fff' }
-                : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+                : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
             }
           >
             {p === '7d' ? '7 jours' : '30 jours'}
@@ -211,8 +211,8 @@ export default function ActivitiesPage() {
           className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
           style={
             typeFilter === 'all'
-              ? { background: 'rgba(255,255,255,0.1)', color: '#fff' }
-              : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)' }
+              ? { background: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)' }
+              : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
           }
         >
           Toutes
@@ -224,8 +224,8 @@ export default function ActivitiesPage() {
             className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
             style={
               typeFilter === t
-                ? { background: 'rgba(255,255,255,0.1)', color: '#fff' }
-                : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)' }
+                ? { background: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)' }
+                : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
             }
           >
             {CARDIO_TYPE_LABELS[t]}
@@ -237,7 +237,7 @@ export default function ActivitiesPage() {
       {weeklyChartData.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <GlassCard>
-            <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 section-header">
               Calories brûlées / semaine
             </h3>
             <BarChartComponent
@@ -248,7 +248,7 @@ export default function ActivitiesPage() {
             />
           </GlassCard>
           <GlassCard>
-            <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 section-header">
               Durée / semaine (min)
             </h3>
             <BarChartComponent
@@ -270,7 +270,7 @@ export default function ActivitiesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Longest duration */}
             <GlassCard>
-              <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
+              <p className="text-xs font-semibold uppercase tracking-wider mb-2 section-header">
                 Activité la plus longue
               </p>
               {records.longestActivity ? (
@@ -278,21 +278,21 @@ export default function ActivitiesPage() {
                   <p className="num-highlight text-2xl" style={{ color: '#FF9F0A' }}>
                     {records.longestActivity.duration_minutes} min
                   </p>
-                  <p className="text-sm text-white/40 mt-1">
+                  <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
                     {typeLabel(records.longestActivity.activity_type)}
                   </p>
-                  <p className="text-xs text-white/20 mt-0.5">
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-quaternary)' }}>
                     {formatDate(records.longestActivity.date)}
                   </p>
                 </>
               ) : (
-                <p className="text-white/30 text-sm">Aucune donnée</p>
+                <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Aucune donnée</p>
               )}
             </GlassCard>
 
             {/* Most calories */}
             <GlassCard>
-              <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
+              <p className="text-xs font-semibold uppercase tracking-wider mb-2 section-header">
                 Plus de calories brûlées
               </p>
               {records.mostCaloriesBurned ? (
@@ -300,21 +300,21 @@ export default function ActivitiesPage() {
                   <p className="num-highlight text-2xl" style={{ color: '#FF9F0A' }}>
                     {records.mostCaloriesBurned.calories_burned} kcal
                   </p>
-                  <p className="text-sm text-white/40 mt-1">
+                  <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
                     {typeLabel(records.mostCaloriesBurned.activity_type)}
                   </p>
-                  <p className="text-xs text-white/20 mt-0.5">
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-quaternary)' }}>
                     {formatDate(records.mostCaloriesBurned.date)}
                   </p>
                 </>
               ) : (
-                <p className="text-white/30 text-sm">Aucune donnée</p>
+                <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Aucune donnée</p>
               )}
             </GlassCard>
 
             {/* Longest distance */}
             <GlassCard>
-              <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">
+              <p className="text-xs font-semibold uppercase tracking-wider mb-2 section-header">
                 Distance la plus longue
               </p>
               {records.longestDistance ? (
@@ -324,15 +324,15 @@ export default function ActivitiesPage() {
                       ? records.longestDistance.distance_km.toFixed(2)
                       : '—'} km
                   </p>
-                  <p className="text-sm text-white/40 mt-1">
+                  <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
                     {typeLabel(records.longestDistance.activity_type)}
                   </p>
-                  <p className="text-xs text-white/20 mt-0.5">
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-quaternary)' }}>
                     {formatDate(records.longestDistance.date)}
                   </p>
                 </>
               ) : (
-                <p className="text-white/30 text-sm">Aucune donnée</p>
+                <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Aucune donnée</p>
               )}
             </GlassCard>
           </div>
@@ -341,9 +341,9 @@ export default function ActivitiesPage() {
 
       {/* Activity list */}
       <div className="space-y-2">
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider">Historique</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wider section-header">Historique</h3>
         {activities.length === 0 ? (
-          <GlassCard className="text-white/30 text-center py-10">
+          <GlassCard className="text-center py-10" style={{ color: 'var(--text-tertiary)' }}>
             <Dumbbell size={32} className="mx-auto mb-3 opacity-40" />
             Aucune activité pour cette période
           </GlassCard>
@@ -356,9 +356,9 @@ export default function ActivitiesPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-semibold text-sm">{typeLabel(a.activity_type)}</span>
-                  <span className="text-xs text-white/40">{formatDate(a.date)}</span>
+                  <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{formatDate(a.date)}</span>
                 </div>
-                <div className="flex gap-4 mt-1.5 text-xs text-white/40 flex-wrap">
+                <div className="flex gap-4 mt-1.5 text-xs flex-wrap" style={{ color: 'var(--text-secondary)' }}>
                   <span>
                     <span className="font-semibold" style={{ color: '#64D2FF' }}>{a.duration_minutes} min</span>
                   </span>
@@ -371,13 +371,14 @@ export default function ActivitiesPage() {
                     <span className="font-semibold" style={{ color: '#FF6B6B' }}>{a.calories_burned} kcal</span>
                   </span>
                   {a.notes && (
-                    <span className="text-white/20 italic truncate max-w-xs">{a.notes}</span>
+                    <span className="italic truncate max-w-xs" style={{ color: 'var(--text-quaternary)' }}>{a.notes}</span>
                   )}
                 </div>
               </div>
               <button
                 onClick={() => handleDelete(a.id)}
-                className="text-white/20 hover:text-[#FF6B6B] transition-colors p-1 shrink-0"
+                className="hover:text-[#FF6B6B] transition-colors p-1 shrink-0"
+                style={{ color: 'var(--text-quaternary)' }}
               >
                 <Trash2 size={14} />
               </button>
@@ -437,7 +438,7 @@ export default function ActivitiesPage() {
                 onChange={e => setForm(f => ({ ...f, calories_burned: e.target.value }))}
               />
               {form.duration_minutes && form.calories_burned && (
-                <div className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                <div className="text-[10px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
                   Estimation basée sur {userWeight} kg
                 </div>
               )}

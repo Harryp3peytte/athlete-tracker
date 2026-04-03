@@ -73,13 +73,13 @@ export default function WellnessPage() {
             >
               {todayEntry.form_score}/10
             </div>
-            <div className="text-sm text-white/40">Score forme du jour</div>
+            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Score forme du jour</div>
             {todayEntry.notes && (
-              <div className="text-sm text-white/40 italic">{todayEntry.notes}</div>
+              <div className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>{todayEntry.notes}</div>
             )}
           </>
         ) : (
-          <div className="text-white/30 py-4">Pas encore évalué aujourd&apos;hui</div>
+          <div className="py-4" style={{ color: 'var(--text-tertiary)' }}>Pas encore évalué aujourd&apos;hui</div>
         )}
       </GlassCard>
 
@@ -92,8 +92,8 @@ export default function WellnessPage() {
             className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
             style={
               period === p
-                ? { background: '#FF375F', color: '#fff' }
-                : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+                ? { background: '#FF375F', color: 'var(--text-primary)' }
+                : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
             }
           >
             {p === '7d' ? '7 jours' : '30 jours'}
@@ -103,7 +103,7 @@ export default function WellnessPage() {
 
       {/* Trend chart */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+        <h3 className="section-header">
           Évolution du score
         </h3>
         {entries.length > 0 ? (
@@ -115,13 +115,13 @@ export default function WellnessPage() {
             formatValue={v => `${v}/10`}
           />
         ) : (
-          <div className="text-white/30 text-center py-8">Pas de données</div>
+          <div className="text-center py-8" style={{ color: 'var(--text-tertiary)' }}>Pas de données</div>
         )}
       </GlassCard>
 
       {/* History */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+        <h3 className="section-header">
           Historique
         </h3>
         <div className="space-y-2">
@@ -134,12 +134,12 @@ export default function WellnessPage() {
                 <span className="text-lg font-bold" style={{ color: scoreColor(e.form_score) }}>
                   {e.form_score}/10
                 </span>
-                <span className="text-xs text-white/40">
+                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                   {new Date(e.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                 </span>
               </div>
               {e.notes && (
-                <span className="text-xs text-white/20 truncate max-w-[200px]">{e.notes}</span>
+                <span className="text-xs truncate max-w-[200px]" style={{ color: 'var(--text-quaternary)' }}>{e.notes}</span>
               )}
             </div>
           ))}

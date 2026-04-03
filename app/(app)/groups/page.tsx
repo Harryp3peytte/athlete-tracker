@@ -152,17 +152,17 @@ export default function GroupsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold transition-colors">{group.name}</h3>
-                      <p className="text-sm text-white/40">
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                         {group.memberCount} membre{group.memberCount > 1 ? 's' : ''} •{' '}
-                        <span className="text-white/40">{group.myRole === 'admin' ? 'Admin' : 'Membre'}</span>
+                        <span style={{ color: 'var(--text-secondary)' }}>{group.myRole === 'admin' ? 'Admin' : 'Membre'}</span>
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Invite code section */}
-                <div className="space-y-2 mt-4 pt-4 border-t border-white/[0.06]">
-                  <p className="text-xs font-semibold text-white/40 uppercase tracking-wider">Code d'invitation</p>
+                <div className="space-y-2 mt-4 pt-4" style={{ borderTop: '0.5px solid var(--separator)' }}>
+                  <p className="section-header">Code d&apos;invitation</p>
                   <div className="flex items-center gap-2">
                     <code
                       className="glass-subtle font-mono text-sm tracking-widest px-3 py-1.5 rounded-lg"
@@ -175,9 +175,11 @@ export default function GroupsPage() {
                         e.preventDefault();
                         copyToClipboard(group.invite_code, group.id);
                       }}
-                      className="glass-subtle p-1.5 rounded-full transition-colors hover:bg-white/[0.06]"
+                      className="glass-subtle p-1.5 rounded-full transition-colors"
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = '')}
                     >
-                      <Copy size={16} className={copiedId === group.id ? 'text-[#2AC956]' : 'text-white/40'} />
+                      <Copy size={16} className={copiedId === group.id ? 'text-[#2AC956]' : ''} style={copiedId !== group.id ? { color: 'var(--text-secondary)' } : undefined} />
                     </button>
                     {copiedId === group.id && (
                       <span className="text-xs" style={{ color: '#2AC956' }}>Copié !</span>
@@ -192,7 +194,8 @@ export default function GroupsPage() {
                       e.preventDefault();
                       handleLeaveGroup(group.id);
                     }}
-                    className="mt-4 pt-4 border-t border-white/[0.06] w-full flex items-center justify-center gap-2 text-sm text-[#FF6B6B] hover:bg-[#FF6B6B]/10 transition-colors rounded-xl py-1"
+                    className="mt-4 pt-4 w-full flex items-center justify-center gap-2 text-sm text-[#FF6B6B] hover:bg-[#FF6B6B]/10 transition-colors rounded-xl py-1"
+                    style={{ borderTop: '0.5px solid var(--separator)' }}
                   >
                     <LogOut size={14} />
                     Quitter
@@ -207,9 +210,9 @@ export default function GroupsPage() {
       {/* Empty state */}
       {!loading && groups.length === 0 && (
         <GlassCard className="text-center py-8">
-          <Users size={40} className="mx-auto text-white/20 mb-3" />
-          <p className="text-white/40">Aucun groupe pour le moment</p>
-          <p className="text-sm text-white/30 mt-1">
+          <Users size={40} className="mx-auto mb-3" style={{ color: 'var(--text-quaternary)' }} />
+          <p style={{ color: 'var(--text-secondary)' }}>Aucun groupe pour le moment</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
             Créez un groupe ou rejoignez-en un avec le code d'invitation
           </p>
         </GlassCard>

@@ -75,8 +75,8 @@ export default function RegisterPage() {
             }}>
             FT
           </div>
-          <h1 className="title-apple text-2xl text-white">Inscription</h1>
-          <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Créez votre compte FitTrack</p>
+          <h1 className="title-apple text-2xl" style={{ color: 'var(--text-primary)' }}>Inscription</h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Créez votre compte FitTrack</p>
         </div>
 
         {/* Glass card */}
@@ -221,7 +221,7 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        <p className="text-center text-sm mt-6" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="text-center text-sm mt-6" style={{ color: 'var(--text-secondary)' }}>
           Déjà un compte ?{' '}
           <Link href="/login" className="text-emerald-400 hover:text-emerald-300 transition-colors">
             Se connecter

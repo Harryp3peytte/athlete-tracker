@@ -54,12 +54,12 @@ export default function HydrationPage() {
         <div className="num-highlight text-5xl" style={{ color: '#64D2FF' }}>
           {todayTotal.toFixed(1)}L
         </div>
-        <div className="text-sm text-white/40">Objectif : {goal}L</div>
+        <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Objectif : {goal}L</div>
 
         {/* Progress bar */}
         <div
           className="rounded-full h-4 mx-auto max-w-xs overflow-hidden"
-          style={{ background: 'rgba(255,255,255,0.06)' }}
+          style={{ background: 'var(--bg-input)' }}
         >
           <div
             className="h-4 rounded-full transition-all"
@@ -92,7 +92,7 @@ export default function HydrationPage() {
 
       {/* 7-day chart */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 section-header">
           7 derniers jours
         </h3>
         {barData.length > 0 ? (
@@ -102,7 +102,7 @@ export default function HydrationPage() {
             height={250}
           />
         ) : (
-          <div className="text-white/30 text-center py-8">Pas de données</div>
+          <div className="text-center py-8" style={{ color: 'var(--text-tertiary)' }}>Pas de données</div>
         )}
       </GlassCard>
     </div>

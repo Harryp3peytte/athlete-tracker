@@ -25,7 +25,7 @@ const EMPTY_FORM: SleepForm = {
 
 // Returns inline style colors for quality badge
 const qualityBadgeStyle = (q: number | null): { color: string } => {
-  if (q == null) return { color: 'rgba(255,255,255,0.4)' };
+  if (q == null) return { color: 'var(--text-secondary)' };
   if (q >= 7)    return { color: '#2AC956' };
   if (q >= 4)    return { color: '#FF9F0A' };
   return { color: '#FF6B6B' };
@@ -106,7 +106,7 @@ export default function SleepPage() {
             <Moon size={24} /> Sommeil
           </h1>
           {avgHours > 0 && (
-            <p className="text-white/40 mt-1 text-sm">
+            <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
               Moyenne&nbsp;:&nbsp;
               <span className="num-highlight font-semibold" style={{ color: '#8E8AFF' }}>
                 {avgHours.toFixed(1)} h
@@ -129,8 +129,8 @@ export default function SleepPage() {
             className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
             style={
               period === p
-                ? { background: '#8E8AFF', color: '#fff' }
-                : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+                ? { background: '#8E8AFF', color: 'var(--text-primary)' }
+                : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
             }
           >
             {p === '7d' ? '7 jours' : '30 jours'}
@@ -140,7 +140,7 @@ export default function SleepPage() {
 
       {/* Bar chart */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">
+        <h3 className="section-header text-xs font-semibold uppercase tracking-wider mb-3">
           Heures de sommeil par nuit
         </h3>
         {chartData.length > 0 ? (
@@ -151,7 +151,7 @@ export default function SleepPage() {
             height={260}
           />
         ) : (
-          <div className="text-white/30 text-center py-12">
+          <div className="text-center py-12" style={{ color: 'var(--text-tertiary)' }}>
             Aucune donnée pour cette période
           </div>
         )}
@@ -159,9 +159,9 @@ export default function SleepPage() {
 
       {/* History list */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Historique</h3>
+        <h3 className="section-header text-xs font-semibold uppercase tracking-wider mb-3">Historique</h3>
         {sortedEntries.length === 0 ? (
-          <p className="text-white/30 text-center py-8">Aucune entrée enregistrée</p>
+          <p className="text-center py-8" style={{ color: 'var(--text-tertiary)' }}>Aucune entrée enregistrée</p>
         ) : (
           <div className="space-y-2">
             {sortedEntries.map(e => (
@@ -182,19 +182,20 @@ export default function SleepPage() {
                         Qualité {e.quality}/10
                       </span>
                     )}
-                    <span className="text-xs text-white/30">
+                    <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                       {new Date(e.date + 'T12:00:00').toLocaleDateString('fr-FR', {
                         weekday: 'short', day: 'numeric', month: 'short',
                       })}
                     </span>
                   </div>
                   {e.notes && (
-                    <p className="text-xs text-white/30 mt-1">{e.notes}</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>{e.notes}</p>
                   )}
                 </div>
                 <button
                   onClick={() => handleDelete(e.id)}
-                  className="text-white/20 hover:text-[#FF6B6B] transition-colors p-1 ml-2"
+                  className="hover:text-[#FF6B6B] transition-colors p-1 ml-2"
+                  style={{ color: 'var(--text-quaternary)' }}
                 >
                   <Trash2 size={14} />
                 </button>

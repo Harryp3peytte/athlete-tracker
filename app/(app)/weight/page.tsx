@@ -52,7 +52,7 @@ export default function WeightPage() {
   const entries = data?.entries || [];
   const trendIcon = data?.trend === 'up' ? <TrendingUp size={16} className="text-red-400" />
     : data?.trend === 'down' ? <TrendingDown size={16} className="text-emerald-500" />
-    : <Minus size={16} className="text-white/40" />;
+    : <Minus size={16} style={{ color: 'var(--text-secondary)' }} />;
 
   return (
     <div className="space-y-6">
@@ -60,7 +60,7 @@ export default function WeightPage() {
         <div>
           <h1 className="title-apple flex items-center gap-2"><Scale size={24} /> Poids</h1>
           {data?.current && (
-            <p className="text-white/40 flex items-center gap-2 mt-1">
+            <p className="flex items-center gap-2 mt-1" style={{ color: 'var(--text-secondary)' }}>
               Actuel:&nbsp;
               <span className="num-highlight" style={{ color: '#30D158' }}>{data.current} kg</span>
               {trendIcon}
@@ -79,8 +79,8 @@ export default function WeightPage() {
             className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
             style={
               period === p
-                ? { background: '#30D158', color: '#fff' }
-                : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+                ? { background: '#30D158', color: 'var(--text-primary)' }
+                : { background: 'var(--bg-input)', color: 'var(--text-secondary)' }
             }
           >
             {p}
@@ -93,26 +93,27 @@ export default function WeightPage() {
         {entries.length > 0 ? (
           <TrendChart data={entries.map(e => ({ date: e.date, value: e.weight_kg }))} label="Poids (kg)" formatValue={v => `${v}kg`} />
         ) : (
-          <div className="text-white/30 text-center py-12">Aucune entrée pour cette période</div>
+          <div className="text-center py-12" style={{ color: 'var(--text-tertiary)' }}>Aucune entrée pour cette période</div>
         )}
       </GlassCard>
 
       {/* History */}
       <GlassCard>
-        <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3">Historique</h3>
+        <h3 className="section-header mb-3">Historique</h3>
         <div className="space-y-2">
           {entries.slice().reverse().map(e => (
             <div key={e.id} className="glass-subtle rounded-xl flex items-center justify-between px-4 py-3">
               <div>
                 <span className="num-highlight font-medium" style={{ color: '#30D158' }}>{e.weight_kg} kg</span>
-                <span className="text-xs text-white/30 ml-3">
+                <span className="text-xs ml-3" style={{ color: 'var(--text-tertiary)' }}>
                   {new Date(e.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                 </span>
-                {e.notes && <span className="text-xs text-white/20 ml-2">{e.notes}</span>}
+                {e.notes && <span className="text-xs ml-2" style={{ color: 'var(--text-quaternary)' }}>{e.notes}</span>}
               </div>
               <button
                 onClick={() => handleDelete(e.id)}
-                className="text-white/20 hover:text-[#FF6B6B] transition-colors p-1"
+                className="hover:text-[#FF6B6B] transition-colors p-1"
+                style={{ color: 'var(--text-quaternary)' }}
               >
                 <Trash2 size={14} />
               </button>

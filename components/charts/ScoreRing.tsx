@@ -15,7 +15,7 @@ export default function ScoreRing({ score, size = 120, strokeWidth = 8 }: ScoreR
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#374151" strokeWidth={strokeWidth} />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--border-subtle)" strokeWidth={strokeWidth} />
         <circle
           cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={color}
           strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={offset}
@@ -24,7 +24,7 @@ export default function ScoreRing({ score, size = 120, strokeWidth = 8 }: ScoreR
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className="text-2xl font-bold" style={{ color }}>{score}</span>
-        <span className="text-xs text-gray-500">/100</span>
+        <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>/100</span>
       </div>
     </div>
   );

@@ -62,14 +62,14 @@ export default function ChatPage() {
         </div>
         <div>
           <h1 className="text-lg font-bold">FitCoach IA</h1>
-          <p className="text-xs text-white/40">Ton assistant nutrition &amp; sport</p>
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Ton assistant nutrition &amp; sport</p>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-4 pr-2">
         {messages.length === 0 && (
-          <div className="text-center py-12 text-white/40">
-            <MessageCircle size={48} className="mx-auto mb-4 text-white/20" />
+          <div className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
+            <MessageCircle size={48} className="mx-auto mb-4" style={{ color: 'var(--text-quaternary)' }} />
             <p className="font-medium">Commence une conversation !</p>
             <p className="text-sm mt-1">Demande des conseils repas, entraînement, ou une analyse de ta journée.</p>
             <div className="flex flex-wrap justify-center gap-2 mt-4">
@@ -77,7 +77,10 @@ export default function ChatPage() {
                 <button
                   key={s}
                   onClick={() => setInput(s)}
-                  className="glass-subtle px-3 py-1.5 rounded-xl text-xs text-white/40 hover:bg-white/[0.06] transition-colors"
+                  className="glass-subtle px-3 py-1.5 rounded-xl text-xs transition-colors"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   {s}
                 </button>
@@ -95,21 +98,21 @@ export default function ChatPage() {
             )}
             <div
               className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                msg.role === 'user' ? 'text-white rounded-br-md' : 'glass-subtle text-white/90 rounded-bl-md'
+                msg.role === 'user' ? 'rounded-br-md' : 'glass-subtle rounded-bl-md'
               }`}
               style={msg.role === 'user'
-                ? { background: 'linear-gradient(135deg, #10B981, #059669)' }
-                : undefined
+                ? { background: 'linear-gradient(135deg, #10B981, #059669)', color: 'var(--text-primary)' }
+                : { color: 'var(--text-primary)' }
               }
             >
               <div className="whitespace-pre-wrap">{msg.content}</div>
-              <div className={`text-xs mt-1 ${msg.role === 'user' ? 'text-white/60' : 'text-white/30'}`}>
+              <div className="text-xs mt-1" style={{ color: msg.role === 'user' ? 'var(--text-secondary)' : 'var(--text-tertiary)' }}>
                 {new Date(msg.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
             {msg.role === 'user' && (
               <div className="w-8 h-8 glass-subtle rounded-lg flex-shrink-0 flex items-center justify-center">
-                <User size={14} className="text-white/40" />
+                <User size={14} style={{ color: 'var(--text-secondary)' }} />
               </div>
             )}
           </div>
@@ -122,9 +125,9 @@ export default function ChatPage() {
             </div>
             <div className="glass-subtle px-4 py-3 rounded-2xl rounded-bl-md">
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-white/30 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 bg-white/30 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 bg-white/30 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: 'var(--text-tertiary)', animationDelay: '0ms' }} />
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: 'var(--text-tertiary)', animationDelay: '150ms' }} />
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: 'var(--text-tertiary)', animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
@@ -132,7 +135,7 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSend} className="flex gap-2 mt-4 pt-4 border-t border-white/[0.06]">
+      <form onSubmit={handleSend} className="flex gap-2 mt-4 pt-4" style={{ borderTop: '0.5px solid var(--separator)' }}>
         <input
           className="input-field flex-1"
           value={input}

@@ -12,9 +12,9 @@ interface MacroPieChartProps {
 const COLORS = ['#2AC956', '#64D2FF', '#FF9F0A'];
 
 const tooltipStyle = {
-  background: 'rgba(30,30,30,0.9)',
+  background: 'var(--tooltip-bg)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255,255,255,0.1)',
+  border: '0.5px solid var(--tooltip-border)',
   borderRadius: '12px',
   boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
 };
@@ -27,7 +27,7 @@ export default function MacroPieChart({ proteins, carbs, fats, height = 250 }: M
   ].filter(d => d.value > 0);
 
   if (data.length === 0) {
-    return <div className="flex items-center justify-center text-white/30" style={{ height }}>Pas de données</div>;
+    return <div className="flex items-center justify-center" style={{ height, color: 'var(--text-tertiary)' }}>Pas de données</div>;
   }
 
   return (
@@ -37,7 +37,7 @@ export default function MacroPieChart({ proteins, carbs, fats, height = 250 }: M
           {data.map((_, i) => <Cell key={i} fill={COLORS[i]} style={{ filter: `drop-shadow(0 0 6px ${COLORS[i]}40)` }} />)}
         </Pie>
         <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => [`${value}g`, '']} />
-        <Legend formatter={(value) => <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>{value}</span>} />
+        <Legend formatter={(value) => <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{value}</span>} />
       </PieChart>
     </ResponsiveContainer>
   );

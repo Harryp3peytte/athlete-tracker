@@ -50,7 +50,7 @@ export default function AnimatedRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="var(--border-subtle)"
           strokeWidth={strokeWidth}
         />
         {/* Foreground ring with gradient */}
@@ -74,9 +74,9 @@ export default function AnimatedRing({
         <div className="absolute flex flex-col items-center">
           <span className="num-highlight text-3xl" style={{ color: gradientFrom }}>{score}</span>
           {label ? (
-            <span className="text-[10px] text-white/40 mt-0.5">{label}</span>
+            <span className="text-[10px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>{label}</span>
           ) : (
-            <span className="text-[10px] text-white/40 mt-0.5">/{max}</span>
+            <span className="text-[10px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>/{max}</span>
           )}
         </div>
       )}

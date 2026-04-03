@@ -40,8 +40,8 @@ export default function LoginPage() {
             }}>
             FT
           </div>
-          <h1 className="title-apple text-2xl text-white">Connexion</h1>
-          <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Bienvenue sur FitTrack</p>
+          <h1 className="title-apple text-2xl" style={{ color: 'var(--text-primary)' }}>Connexion</h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Bienvenue sur FitTrack</p>
         </div>
 
         {/* Glass card */}
@@ -84,7 +84,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-sm mt-6" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="text-center text-sm mt-6" style={{ color: 'var(--text-secondary)' }}>
           Pas de compte ?{' '}
           <Link href="/register" className="text-emerald-400 hover:text-emerald-300 transition-colors">
             S&apos;inscrire
