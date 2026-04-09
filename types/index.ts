@@ -73,8 +73,16 @@ export interface WorkoutSession {
   date: string;
   name: string | null;
   notes: string | null;
+  duration_seconds: number | null;
   created_at: string;
   workout_exercises?: WorkoutExercise[];
+}
+
+export interface SeriesData {
+  set: number;
+  reps: number;
+  weight_kg: number;
+  completed: boolean;
 }
 
 export interface WorkoutExercise {
@@ -85,6 +93,7 @@ export interface WorkoutExercise {
   reps: number;
   weight_kg: number | null;
   notes: string | null;
+  series_data: SeriesData[];
   created_at: string;
 }
 

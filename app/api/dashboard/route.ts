@@ -1,32 +1,47 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { getAthleteId } from '@/lib/getAthlete';
 import { calculateHealthScore } from '@/lib/healthScore';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const auth = await getAthleteId(supabase);
   if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const supabaseAdmin = getSupabaseAdmin();
 
-  const today = new Date().toISOString().split('T')[0];
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  // Accept optional ?date= parameter
+  const dateParam = request.nextUrl.searchParams.get('date');
+  const targetDate = dateParam || new Date().toISOString().split('T')[0];
+
+  // Calculate 7-day range ending on targetDate
+  const targetDateObj = new Date(targetDate + 'T12:00:00');
+  const sevenDaysAgo = new Date(targetDateObj);
+  sevenDaysAgo.setDate(targetDateObj.getDate() - 7);
   const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+
+  // Calculate week start (Monday) for the target date
+  const dayOfWeek = targetDateObj.getDay(); // 0=Sunday
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const weekStartDate = new Date(targetDateObj);
+  weekStartDate.setDate(targetDateObj.getDate() + mondayOffset);
+  const weekEndDate = new Date(weekStartDate);
+  weekEndDate.setDate(weekStartDate.getDate() + 6);
+  const weekStartStr = weekStartDate.toISOString().split('T')[0];
+  const weekEndStr = weekEndDate.toISOString().split('T')[0];
 
   const [athleteRes, todayMealsRes, todayCardioRes, workoutsRes, sleepRes, weightsRes, hydrationRes, wellnessRes, weekMealsRes, weekCardioRes] = await Promise.all([
     supabaseAdmin.from('athletes').select('*').eq('id', auth.athleteId).single(),
-    supabaseAdmin.from('nutrition_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabaseAdmin.from('workout_sessions').select('*, workout_exercises(*)').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabaseAdmin.from('sleep_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
-    supabaseAdmin.from('weight_logs').select('*').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr).order('date', { ascending: true }),
-    supabaseAdmin.from('hydration_logs').select('liters').eq('athlete_id', auth.athleteId).eq('date', today),
-    supabaseAdmin.from('wellness_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', today).maybeSingle(),
-    // 7-day calorie data
-    supabaseAdmin.from('nutrition_logs').select('date, calories').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr),
-    supabaseAdmin.from('cardio_logs').select('date, calories_burned').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr),
+    supabaseAdmin.from('nutrition_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', targetDate),
+    supabaseAdmin.from('cardio_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', targetDate),
+    supabaseAdmin.from('workout_sessions').select('*, workout_exercises(*)').eq('athlete_id', auth.athleteId).eq('date', targetDate),
+    supabaseAdmin.from('sleep_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', targetDate).maybeSingle(),
+    supabaseAdmin.from('weight_logs').select('*').eq('athlete_id', auth.athleteId).gte('date', sevenDaysAgoStr).lte('date', targetDate).order('date', { ascending: true }),
+    supabaseAdmin.from('hydration_logs').select('liters').eq('athlete_id', auth.athleteId).eq('date', targetDate),
+    supabaseAdmin.from('wellness_logs').select('*').eq('athlete_id', auth.athleteId).eq('date', targetDate).maybeSingle(),
+    // Week calorie data (for the week containing the target date)
+    supabaseAdmin.from('nutrition_logs').select('date, calories').eq('athlete_id', auth.athleteId).gte('date', weekStartStr).lte('date', weekEndStr),
+    supabaseAdmin.from('cardio_logs').select('date, calories_burned').eq('athlete_id', auth.athleteId).gte('date', weekStartStr).lte('date', weekEndStr),
   ]);
 
   const athlete = athleteRes.data;
@@ -46,7 +61,7 @@ export async function GET() {
   const totalFats = todayMeals.reduce((s: number, m: { fats: number }) => s + (m.fats || 0), 0);
   const totalHydration = (hydrationRes.data || []).reduce((s: number, h: { liters: number }) => s + (h.liters || 0), 0);
 
-  // Build 7-day calorie trend
+  // Build 7-day calorie trend for the week
   const consumedByDate: Record<string, number> = {};
   const burnedByDate: Record<string, number> = {};
   (weekMealsRes.data || []).forEach((m: { date: string; calories: number }) => {
@@ -56,11 +71,11 @@ export async function GET() {
     burnedByDate[c.date] = (burnedByDate[c.date] || 0) + (c.calories_burned || 0);
   });
 
-  // Generate all 7 days (including days with no data)
+  // Generate all 7 days of the week (Mon-Sun)
   const calorieTrend: Array<{ date: string; consumed: number; burned: number }> = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStartDate);
+    d.setDate(weekStartDate.getDate() + i);
     const dateStr = d.toISOString().split('T')[0];
     calorieTrend.push({
       date: dateStr,
@@ -69,7 +84,7 @@ export async function GET() {
     });
   }
 
-  const healthScore = await calculateHealthScore(auth.athleteId, today, athlete.daily_calorie_target, athlete.goal_type);
+  const healthScore = await calculateHealthScore(auth.athleteId, targetDate, athlete.daily_calorie_target, athlete.goal_type);
 
   return NextResponse.json({
     athlete,

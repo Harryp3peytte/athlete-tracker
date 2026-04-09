@@ -1,14 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import {
-  AreaChart, Area, ResponsiveContainer,
-} from 'recharts';
+import { useEffect, useState, useCallback } from 'react';
 import { Plus, Utensils, Moon, Dumbbell, Scale, Droplets, Heart, Activity } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import BottomSheet from '@/components/ui/BottomSheet';
 import ActivityRings from '@/components/charts/ActivityRings';
-import WeekCalendar from '@/components/charts/WeekCalendar';
+import WeekScoreBar from '@/components/charts/WeekScoreBar';
+import CaloriesChart from '@/components/charts/CaloriesChart';
 import { useProfile } from '@/hooks/useProfile';
 import type { DashboardData } from '@/types';
 import Link from 'next/link';
@@ -33,12 +31,31 @@ const quickAddItems = [
 ];
 
 export default function DashboardPage() {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(todayStr);
   const [data, setData] = useState<DashboardData | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
   const { profile } = useProfile();
 
+  const fetchDashboardData = useCallback(async (date: string) => {
+    setTransitioning(true);
+    try {
+      const res = await fetch(`/api/dashboard?date=${date}`);
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      console.error(err);
+    }
+    setTimeout(() => setTransitioning(false), 150);
+  }, []);
+
   useEffect(() => {
-    fetch('/api/dashboard').then(r => r.json()).then(setData).catch(console.error);
+    fetchDashboardData(selectedDate);
+  }, [selectedDate, fetchDashboardData]);
+
+  const handleDayClick = useCallback((date: string) => {
+    setSelectedDate(date);
   }, []);
 
   if (!data) {
@@ -53,18 +70,13 @@ export default function DashboardPage() {
 
   const target = data.calories.target || 2000;
 
-  const calorieTrendData = (data.calorieTrend || []).map(d => ({
-    date: new Date(d.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric' }),
-    consumed: d.consumed,
-  }));
-
-  const weightTrendData = (data.weight.trend || []).map(w => ({
-    date: w.date,
-    value: w.weight_kg,
-  }));
-
   const activityMinutes = data.cardioActivities.reduce((sum, a) => sum + (a.duration_minutes || 0), 0)
     + data.workoutSessions.length * 45;
+
+  const isToday = selectedDate === todayStr;
+  const selectedDateLabel = isToday
+    ? new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+    : new Date(selectedDate + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
   return (
     <div className="space-y-4">
@@ -84,11 +96,10 @@ export default function DashboardPage() {
               {data.athlete?.name || profile?.name || 'Athlète'}
             </h1>
             <p className="text-sm capitalize" style={{ color: '#6B5B5B' }}>
-              {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+              {selectedDateLabel}
             </p>
           </div>
         </div>
-        {/* "+" button */}
         <button
           onClick={() => setQuickAddOpen(true)}
           className="w-11 h-11 rounded-full flex items-center justify-center transition-transform active:scale-95"
@@ -103,138 +114,111 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      {/* 2. Week Calendar */}
+      {/* 2. Week Score Bar (interactive days with ring gauges) */}
       <GlassCard>
-        <WeekCalendar />
+        <WeekScoreBar
+          selectedDate={selectedDate}
+          onDayClick={handleDayClick}
+        />
       </GlassCard>
 
-      {/* 3. Widgets: Mini charts + Activity Rings */}
-      <GlassCard className="!p-4">
-        <div className="flex gap-3">
-          {/* Left: 2 mini charts stacked */}
-          <div className="flex-1 flex flex-col gap-3">
-            {/* Mini chart: Calories */}
-            <div className="rounded-2xl p-3" style={{ background: 'rgba(255, 255, 255, 0.4)', border: '1px solid rgba(255,255,255,0.5)' }}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <div className="w-2 h-2 rounded-sm" style={{ background: '#FF9500' }} />
-                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#6B5B5B' }}>Calories</span>
-              </div>
-              <div className="text-lg font-bold" style={{ color: '#1A1A1A' }}>{data.calories.consumed}<span className="text-[10px] font-normal ml-0.5" style={{ color: '#9B8A8A' }}>/{target}</span></div>
-              {calorieTrendData.length > 1 && (
-                <div className="h-10 -mx-1 mt-1">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={calorieTrendData}>
-                      <defs>
-                        <linearGradient id="miniCalGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#FF9500" stopOpacity={0.3} />
-                          <stop offset="100%" stopColor="#FF9500" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <Area type="monotone" dataKey="consumed" stroke="#FF9500" strokeWidth={2} fill="url(#miniCalGrad)" dot={false} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+      {/* Content area with fade transition */}
+      <div
+        style={{
+          opacity: transitioning ? 0.4 : 1,
+          transition: 'opacity 0.2s ease',
+        }}
+      >
+        {/* 3. Calories Chart (full width, big) */}
+        <GlassCard className="!p-4 mb-4">
+          <CaloriesChart data={data.calorieTrend || []} />
+        </GlassCard>
+
+        {/* 4. Activity Rings + Weight */}
+        <GlassCard className="!p-4 mb-4">
+          <div className="flex gap-3">
+            {/* Left: Weight mini chart */}
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="rounded-2xl p-3" style={{ background: 'rgba(255, 255, 255, 0.4)', border: '1px solid rgba(255,255,255,0.5)' }}>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className="w-2 h-2 rounded-sm" style={{ background: '#30D158' }} />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#6B5B5B' }}>Poids</span>
                 </div>
-              )}
+                <div className="text-lg font-bold" style={{ color: '#1A1A1A' }}>
+                  {data.weight.current ? `${data.weight.current}` : '-'}
+                  <span className="text-[10px] font-normal ml-0.5" style={{ color: '#9B8A8A' }}>kg</span>
+                </div>
+              </div>
+
+              {/* Today's calories summary */}
+              <div className="rounded-2xl p-3 mt-3" style={{ background: 'rgba(255, 255, 255, 0.4)', border: '1px solid rgba(255,255,255,0.5)' }}>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className="w-2 h-2 rounded-sm" style={{ background: '#FF9500' }} />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#6B5B5B' }}>Calories</span>
+                </div>
+                <div className="text-lg font-bold" style={{ color: '#1A1A1A' }}>
+                  {data.calories.consumed}
+                  <span className="text-[10px] font-normal ml-0.5" style={{ color: '#9B8A8A' }}>/{target}</span>
+                </div>
+              </div>
             </div>
 
-            {/* Mini chart: Poids */}
-            <div className="rounded-2xl p-3" style={{ background: 'rgba(255, 255, 255, 0.4)', border: '1px solid rgba(255,255,255,0.5)' }}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <div className="w-2 h-2 rounded-sm" style={{ background: '#30D158' }} />
-                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#6B5B5B' }}>Poids</span>
-              </div>
-              <div className="text-lg font-bold" style={{ color: '#1A1A1A' }}>
-                {data.weight.current ? `${data.weight.current}` : '-'}
-                <span className="text-[10px] font-normal ml-0.5" style={{ color: '#9B8A8A' }}>kg</span>
-              </div>
-              {weightTrendData.length > 1 && (
-                <div className="h-10 -mx-1 mt-1">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={weightTrendData}>
-                      <defs>
-                        <linearGradient id="miniWeightGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#30D158" stopOpacity={0.3} />
-                          <stop offset="100%" stopColor="#30D158" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <Area type="monotone" dataKey="value" stroke="#30D158" strokeWidth={2} fill="url(#miniWeightGrad)" dot={false} />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
+            {/* Right: Activity Rings */}
+            <div className="flex items-center justify-center" style={{ minWidth: 150 }}>
+              <ActivityRings
+                size={140}
+                rings={[
+                  { value: data.calories.burned, max: target, color: '#FF2D55', label: 'Calories' },
+                  { value: activityMinutes, max: 30, color: '#2AC956', label: 'Activité' },
+                  { value: data.hydration, max: 2, color: '#00C7BE', label: 'Hydratation' },
+                ]}
+              />
             </div>
           </div>
+          {/* Ring legend */}
+          <div className="flex justify-center gap-4 mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.4)' }}>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#FF2D55' }} />
+              <span className="text-[10px]" style={{ color: '#6B5B5B' }}>Calories</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#2AC956' }} />
+              <span className="text-[10px]" style={{ color: '#6B5B5B' }}>Activité</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#00C7BE' }} />
+              <span className="text-[10px]" style={{ color: '#6B5B5B' }}>Hydratation</span>
+            </div>
+          </div>
+        </GlassCard>
 
-          {/* Right: Activity Rings */}
-          <div className="flex items-center justify-center" style={{ minWidth: 150 }}>
-            <ActivityRings
-              size={140}
-              rings={[
-                {
-                  value: data.calories.burned,
-                  max: target,
-                  color: '#FF2D55',
-                  label: 'Calories',
-                },
-                {
-                  value: activityMinutes,
-                  max: 30,
-                  color: '#2AC956',
-                  label: 'Activité',
-                },
-                {
-                  value: data.hydration,
-                  max: 2,
-                  color: '#00C7BE',
-                  label: 'Hydratation',
-                },
-              ]}
-            />
-          </div>
-        </div>
-        {/* Ring legend */}
-        <div className="flex justify-center gap-4 mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.4)' }}>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#FF2D55' }} />
-            <span className="text-[10px]" style={{ color: '#6B5B5B' }}>Calories</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#2AC956' }} />
-            <span className="text-[10px]" style={{ color: '#6B5B5B' }}>Activité</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#00C7BE' }} />
-            <span className="text-[10px]" style={{ color: '#6B5B5B' }}>Hydratation</span>
-          </div>
-        </div>
-      </GlassCard>
-
-      {/* 4. Score du jour */}
-      <GlassCard>
-        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#6B5B5B' }}>
-          Score du jour
-        </h3>
-        <div className="space-y-3">
-          {scoreBreakdown.map(({ key, label, color, max }) => {
-            const val = data.healthScore.breakdown[key];
-            const pct = (val / max) * 100;
-            return (
-              <div key={key} className="flex items-center gap-3">
-                <span className="text-[12px] font-medium w-24" style={{ color: '#6B5B5B' }}>{label}</span>
-                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.05)' }}>
-                  <div className="h-full rounded-full" style={{
-                    width: `${pct}%`,
-                    background: color,
-                    boxShadow: `0 0 8px ${color}30`,
-                    transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
-                  }} />
+        {/* 5. Score du jour */}
+        <GlassCard>
+          <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#6B5B5B' }}>
+            Score du jour — {data.healthScore.total}/100
+          </h3>
+          <div className="space-y-3">
+            {scoreBreakdown.map(({ key, label, color, max }) => {
+              const val = data.healthScore.breakdown[key];
+              const pct = (val / max) * 100;
+              return (
+                <div key={key} className="flex items-center gap-3">
+                  <span className="text-[12px] font-medium w-24" style={{ color: '#6B5B5B' }}>{label}</span>
+                  <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.05)' }}>
+                    <div className="h-full rounded-full" style={{
+                      width: `${pct}%`,
+                      background: color,
+                      boxShadow: `0 0 8px ${color}30`,
+                      transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
+                    }} />
+                  </div>
+                  <span className="text-[12px] font-semibold w-12 text-right" style={{ color: '#1A1A1A' }}>{val}/{max}</span>
                 </div>
-                <span className="text-[12px] font-semibold w-12 text-right" style={{ color: '#1A1A1A' }}>{val}/{max}</span>
-              </div>
-            );
-          })}
-        </div>
-      </GlassCard>
+              );
+            })}
+          </div>
+        </GlassCard>
+      </div>
 
       {/* Quick Add Bottom Sheet */}
       <BottomSheet isOpen={quickAddOpen} onClose={() => setQuickAddOpen(false)} title="Que voulez-vous ajouter ?">

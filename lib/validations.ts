@@ -36,12 +36,19 @@ export const workoutSessionSchema = z.object({
   date: z.string(),
   name: z.string().min(1),
   notes: z.string().optional().nullable(),
+  duration_seconds: z.number().int().nonnegative().optional().nullable(),
   exercises: z.array(z.object({
     exercise_name: z.string().min(1),
     sets: z.number().int().positive(),
     reps: z.number().int().positive(),
     weight_kg: z.number().nonnegative().optional().nullable(),
     notes: z.string().optional().nullable(),
+    series_data: z.array(z.object({
+      set: z.number().int().positive(),
+      reps: z.number().int().nonnegative(),
+      weight_kg: z.number().nonnegative(),
+      completed: z.boolean(),
+    })).optional().nullable(),
   })).optional(),
 });
 

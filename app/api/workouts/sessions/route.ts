@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
       date: data.date,
       name: data.name,
       notes: data.notes ?? null,
+      duration_seconds: data.duration_seconds ?? null,
     })
     .select()
     .single();
@@ -84,6 +85,7 @@ export async function POST(request: NextRequest) {
       reps: ex.reps,
       weight_kg: ex.weight_kg ?? null,
       notes: ex.notes ?? null,
+      series_data: ex.series_data ?? [],
     }));
 
     const { error: exercisesError } = await supabaseAdmin
