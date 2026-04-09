@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Utensils, Moon, Dumbbell, Scale, Droplets, Heart, Activity } from 'lucide-react';
+import { Plus, Utensils, Moon, Dumbbell, Scale, Droplets, Heart, Activity, Flame, TrendingUp, TrendingDown } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import BottomSheet from '@/components/ui/BottomSheet';
 import ActivityRings from '@/components/charts/ActivityRings';
@@ -11,6 +11,17 @@ import WeightChart from '@/components/charts/WeightChart';
 import { useProfile } from '@/hooks/useProfile';
 import type { DashboardData } from '@/types';
 import Link from 'next/link';
+
+interface InsightsData {
+  streak: number;
+  weekly: {
+    avgCalories: number; prevAvgCalories: number;
+    avgSleep: number; prevAvgSleep: number;
+    totalHydration: number; prevTotalHydration: number;
+    workoutCount: number; prevWorkoutCount: number;
+    cardioMinutes: number; prevCardioMinutes: number;
+  };
+}
 
 const scoreBreakdown = [
   { key: 'sleep', label: 'Sommeil', color: '#5E5CE6', max: 20 },
@@ -35,9 +46,14 @@ export default function DashboardPage() {
   const todayStr = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayStr);
   const [data, setData] = useState<DashboardData | null>(null);
+  const [insights, setInsights] = useState<InsightsData | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const { profile } = useProfile();
+
+  useEffect(() => {
+    fetch('/api/dashboard/insights').then(r => r.json()).then(setInsights).catch(console.error);
+  }, []);
 
   const fetchDashboardData = useCallback(async (date: string) => {
     setTransitioning(true);
@@ -123,6 +139,51 @@ export default function DashboardPage() {
         />
       </GlassCard>
 
+      {/* Goal progress widget */}
+      {data.athlete?.goal_type && data.athlete?.target_weight && data.weight.current && (
+        <GlassCard className="!p-4">
+          {(() => {
+            const current = data.weight.current!;
+            const target = data.athlete.target_weight!;
+            const goalType = data.athlete.goal_type;
+            const diff = current - target;
+            const isLosing = goalType === 'LOSE_WEIGHT';
+            const progress = isLosing
+              ? Math.max(0, Math.min(100, ((current - target) > 0 ? (1 - Math.abs(diff) / Math.max(current, 1)) * 100 : 100)))
+              : goalType === 'GAIN_MUSCLE'
+                ? Math.max(0, Math.min(100, diff >= 0 ? 100 : (current / target) * 100))
+                : 100;
+            const remaining = Math.abs(diff).toFixed(1);
+            const reached = (isLosing && diff <= 0) || (!isLosing && goalType === 'GAIN_MUSCLE' && diff >= 0);
+            const goalColor = goalType === 'LOSE_WEIGHT' ? '#FF2D55' : goalType === 'GAIN_MUSCLE' ? '#BF5AF2' : '#2AC956';
+            const goalLabel = goalType === 'LOSE_WEIGHT' ? 'Perte de poids' : goalType === 'GAIN_MUSCLE' ? 'Prise de muscle' : 'Maintien';
+
+            return (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${goalColor}15` }}>
+                  <span className="text-lg">{reached ? '🎉' : '🎯'}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold" style={{ color: goalColor }}>{goalLabel}</span>
+                    <span className="text-xs font-semibold" style={{ color: '#1A1A1A' }}>{current} kg → {target} kg</span>
+                  </div>
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.05)' }}>
+                    <div className="h-full rounded-full transition-all" style={{
+                      width: `${Math.min(progress, 100)}%`,
+                      background: reached ? '#2AC956' : goalColor,
+                    }} />
+                  </div>
+                  <div className="text-[10px] mt-1" style={{ color: '#9B8A8A' }}>
+                    {reached ? 'Objectif atteint !' : `Encore ${remaining} kg`}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </GlassCard>
+      )}
+
       {/* Content area with fade transition */}
       <div
         style={{
@@ -176,7 +237,7 @@ export default function DashboardPage() {
                 rings={[
                   { value: data.calories.burned, max: target, color: '#FF2D55', label: 'Calories' },
                   { value: activityMinutes, max: 30, color: '#2AC956', label: 'Activité' },
-                  { value: data.hydration, max: 2, color: '#00C7BE', label: 'Hydratation' },
+                  { value: data.hydration, max: data.athlete?.hydration_goal || 2, color: '#00C7BE', label: 'Hydratation' },
                 ]}
               />
             </div>
@@ -224,6 +285,42 @@ export default function DashboardPage() {
             })}
           </div>
         </GlassCard>
+
+        {/* 6. Streak + Weekly Summary */}
+        {insights && (
+          <>
+            {/* Streak */}
+            {insights.streak > 0 && (
+              <GlassCard className="!p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255, 149, 0, 0.1)' }}>
+                    <Flame size={24} style={{ color: '#FF9500' }} />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold" style={{ color: '#FF9500' }}>
+                      {insights.streak} jour{insights.streak > 1 ? 's' : ''}
+                    </div>
+                    <div className="text-xs" style={{ color: '#9B8A8A' }}>de suite avec du tracking</div>
+                  </div>
+                </div>
+              </GlassCard>
+            )}
+
+            {/* Weekly Summary */}
+            <GlassCard>
+              <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#6B5B5B' }}>
+                Bilan de la semaine
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                <WeeklyStat label="Calories/j" value={`${insights.weekly.avgCalories}`} unit="kcal" prev={insights.weekly.prevAvgCalories} current={insights.weekly.avgCalories} color="#FF9500" />
+                <WeeklyStat label="Sommeil/nuit" value={`${insights.weekly.avgSleep}`} unit="h" prev={insights.weekly.prevAvgSleep} current={insights.weekly.avgSleep} color="#5E5CE6" inverted />
+                <WeeklyStat label="Séances muscu" value={`${insights.weekly.workoutCount}`} unit="" prev={insights.weekly.prevWorkoutCount} current={insights.weekly.workoutCount} color="#BF5AF2" inverted />
+                <WeeklyStat label="Cardio" value={`${insights.weekly.cardioMinutes}`} unit="min" prev={insights.weekly.prevCardioMinutes} current={insights.weekly.cardioMinutes} color="#FF2D55" inverted />
+                <WeeklyStat label="Hydratation" value={`${insights.weekly.totalHydration}`} unit="L" prev={insights.weekly.prevTotalHydration} current={insights.weekly.totalHydration} color="#32ADE6" inverted />
+              </div>
+            </GlassCard>
+          </>
+        )}
       </div>
 
       {/* Quick Add Bottom Sheet */}
@@ -242,6 +339,32 @@ export default function DashboardPage() {
           ))}
         </div>
       </BottomSheet>
+    </div>
+  );
+}
+
+function WeeklyStat({ label, value, unit, prev, current, color, inverted }: {
+  label: string; value: string; unit: string; prev: number; current: number; color: string; inverted?: boolean;
+}) {
+  const diff = current - prev;
+  // For inverted metrics (sleep, workouts, cardio), "up" is good
+  const isGood = inverted ? diff >= 0 : diff <= 0;
+  return (
+    <div className="glass-subtle rounded-xl p-3">
+      <div className="text-[10px] font-medium uppercase tracking-wider mb-1" style={{ color: '#9B8A8A' }}>{label}</div>
+      <div className="flex items-end gap-1">
+        <span className="text-lg font-bold" style={{ color }}>{value}</span>
+        {unit && <span className="text-[10px] mb-0.5" style={{ color: '#9B8A8A' }}>{unit}</span>}
+      </div>
+      {diff !== 0 && (
+        <div className="flex items-center gap-0.5 mt-1">
+          {diff > 0 ? <TrendingUp size={10} style={{ color: isGood ? '#2AC956' : '#FF9500' }} /> : <TrendingDown size={10} style={{ color: isGood ? '#2AC956' : '#FF9500' }} />}
+          <span className="text-[10px] font-medium" style={{ color: isGood ? '#2AC956' : '#FF9500' }}>
+            {diff > 0 ? '+' : ''}{typeof current === 'number' && current % 1 !== 0 ? diff.toFixed(1) : Math.round(diff)}
+          </span>
+          <span className="text-[10px]" style={{ color: '#9B8A8A' }}>vs sem. préc.</span>
+        </div>
+      )}
     </div>
   );
 }

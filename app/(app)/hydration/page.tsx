@@ -13,6 +13,7 @@ interface HydrationData {
 
 export default function HydrationPage() {
   const [data, setData] = useState<HydrationData | null>(null);
+  const [goal, setGoal] = useState(2);
   const today = new Date().toISOString().split('T')[0];
 
   const fetchData = useCallback(() => {
@@ -20,6 +21,14 @@ export default function HydrationPage() {
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  // Fetch athlete's custom hydration goal
+  useEffect(() => {
+    fetch('/api/auth/complete-profile')
+      .then(r => r.json())
+      .then(athlete => { if (athlete.hydration_goal) setGoal(athlete.hydration_goal); })
+      .catch(() => {});
+  }, []);
 
   const addWater = async (liters: number) => {
     await fetch('/api/hydration', {
@@ -31,7 +40,6 @@ export default function HydrationPage() {
   };
 
   const todayTotal = data?.todayTotal || 0;
-  const goal = 2;
   const pct = Math.min((todayTotal / goal) * 100, 100);
 
   const barData = Object.entries(data?.byDate || {}).map(([date, liters]) => ({

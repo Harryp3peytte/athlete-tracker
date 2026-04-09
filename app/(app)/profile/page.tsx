@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { User, LogOut, Target, Ruler, Activity, Save, Bell } from 'lucide-react';
+import { User, LogOut, Target, Ruler, Activity, Save, Bell, Droplets, Scale } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import GlassCard from '@/components/ui/GlassCard';
@@ -29,7 +29,7 @@ export default function ProfilePage() {
   const { signOut } = useAuth();
   const [athlete, setAthlete] = useState<Athlete | null>(null);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ name: '', age: '', height_cm: '', gender: 'male', daily_calorie_target: '', base_metabolism: '' });
+  const [form, setForm] = useState({ name: '', age: '', height_cm: '', gender: 'male', daily_calorie_target: '', base_metabolism: '', goal_type: 'MAINTAIN', target_weight: '', hydration_goal: '2' });
   const [deficitData, setDeficitData] = useState<Array<{ date: string; net: number; target: number }>>([]);
   const [notifPrefs, setNotifPrefs] = useState<NotifPref[]>([]);
   const { subscribe, isSubscribed, permission } = useNotifications();
@@ -50,6 +50,9 @@ export default function ProfilePage() {
         gender: data.gender || 'male',
         daily_calorie_target: data.daily_calorie_target?.toString() || '',
         base_metabolism: data.base_metabolism?.toString() || '',
+        goal_type: data.goal_type || 'MAINTAIN',
+        target_weight: data.target_weight?.toString() || '',
+        hydration_goal: data.hydration_goal?.toString() || '2',
       });
     }).catch(console.error);
     fetch('/api/stats/deficit?period=30d').then(r => r.json()).then(setDeficitData).catch(console.error);
@@ -66,6 +69,9 @@ export default function ProfilePage() {
         gender: form.gender || null,
         daily_calorie_target: form.daily_calorie_target ? parseInt(form.daily_calorie_target) : null,
         base_metabolism: form.base_metabolism ? parseInt(form.base_metabolism) : null,
+        goal_type: form.goal_type || null,
+        target_weight: form.target_weight ? parseFloat(form.target_weight) : null,
+        hydration_goal: form.hydration_goal ? parseFloat(form.hydration_goal) : null,
       }),
     });
     setEditing(false);
@@ -105,25 +111,54 @@ export default function ProfilePage() {
           </div>
 
           {!editing ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="glass-subtle rounded-xl p-3 text-center">
-                <Ruler size={16} style={{ color: '#32ADE6' }} className="mx-auto mb-1" />
-                <div className="text-xs" style={{ color: '#6B5B5B' }}>Taille</div>
-                <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.height_cm ? `${athlete.height_cm} cm` : '-'}</div>
-              </div>
-              <div className="glass-subtle rounded-xl p-3 text-center">
-                <Target size={16} className="mx-auto mb-1" style={{ color: '#2AC956' }} />
-                <div className="text-xs" style={{ color: '#6B5B5B' }}>Objectif cal.</div>
-                <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.daily_calorie_target || '-'} kcal</div>
-              </div>
-              <div className="glass-subtle rounded-xl p-3 text-center">
-                <Activity size={16} className="mx-auto mb-1" style={{ color: '#5E5CE6' }} />
-                <div className="text-xs" style={{ color: '#6B5B5B' }}>Métabolisme</div>
-                <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.base_metabolism || '-'} kcal</div>
-              </div>
-              <div className="glass-subtle rounded-xl p-3 text-center">
-                <div className="text-xs mt-1" style={{ color: '#6B5B5B' }}>Genre</div>
-                <div className="text-sm font-medium capitalize" style={{ color: '#1A1A1A' }}>{athlete.gender || '-'}</div>
+            <div className="space-y-3">
+              {/* Goal type banner */}
+              {athlete.goal_type && (
+                <div className="rounded-xl px-4 py-3 flex items-center gap-3" style={{
+                  background: athlete.goal_type === 'LOSE_WEIGHT' ? 'rgba(255, 45, 85, 0.08)' : athlete.goal_type === 'GAIN_MUSCLE' ? 'rgba(191, 90, 242, 0.08)' : 'rgba(42, 201, 86, 0.08)',
+                  border: `1px solid ${athlete.goal_type === 'LOSE_WEIGHT' ? 'rgba(255,45,85,0.2)' : athlete.goal_type === 'GAIN_MUSCLE' ? 'rgba(191,90,242,0.2)' : 'rgba(42,201,86,0.2)'}`,
+                }}>
+                  <Target size={18} style={{ color: athlete.goal_type === 'LOSE_WEIGHT' ? '#FF2D55' : athlete.goal_type === 'GAIN_MUSCLE' ? '#BF5AF2' : '#2AC956' }} />
+                  <div>
+                    <div className="text-sm font-semibold" style={{ color: '#1A1A1A' }}>
+                      {athlete.goal_type === 'LOSE_WEIGHT' ? 'Perte de poids' : athlete.goal_type === 'GAIN_MUSCLE' ? 'Prise de muscle' : 'Maintien'}
+                    </div>
+                    {athlete.target_weight && (
+                      <div className="text-xs" style={{ color: '#6B5B5B' }}>Objectif : {athlete.target_weight} kg</div>
+                    )}
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="glass-subtle rounded-xl p-3 text-center">
+                  <Ruler size={16} style={{ color: '#32ADE6' }} className="mx-auto mb-1" />
+                  <div className="text-xs" style={{ color: '#6B5B5B' }}>Taille</div>
+                  <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.height_cm ? `${athlete.height_cm} cm` : '-'}</div>
+                </div>
+                <div className="glass-subtle rounded-xl p-3 text-center">
+                  <Target size={16} className="mx-auto mb-1" style={{ color: '#2AC956' }} />
+                  <div className="text-xs" style={{ color: '#6B5B5B' }}>Objectif cal.</div>
+                  <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.daily_calorie_target || '-'} kcal</div>
+                </div>
+                <div className="glass-subtle rounded-xl p-3 text-center">
+                  <Activity size={16} className="mx-auto mb-1" style={{ color: '#5E5CE6' }} />
+                  <div className="text-xs" style={{ color: '#6B5B5B' }}>Métabolisme</div>
+                  <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.base_metabolism || '-'} kcal</div>
+                </div>
+                <div className="glass-subtle rounded-xl p-3 text-center">
+                  <Scale size={16} className="mx-auto mb-1" style={{ color: '#30D158' }} />
+                  <div className="text-xs" style={{ color: '#6B5B5B' }}>Poids cible</div>
+                  <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.target_weight ? `${athlete.target_weight} kg` : '-'}</div>
+                </div>
+                <div className="glass-subtle rounded-xl p-3 text-center">
+                  <Droplets size={16} className="mx-auto mb-1" style={{ color: '#64D2FF' }} />
+                  <div className="text-xs" style={{ color: '#6B5B5B' }}>Obj. eau/jour</div>
+                  <div className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{athlete.hydration_goal || 2}L</div>
+                </div>
+                <div className="glass-subtle rounded-xl p-3 text-center">
+                  <div className="text-xs mt-1" style={{ color: '#6B5B5B' }}>Genre</div>
+                  <div className="text-sm font-medium capitalize" style={{ color: '#1A1A1A' }}>{athlete.gender === 'male' ? 'Homme' : athlete.gender === 'female' ? 'Femme' : athlete.gender || '-'}</div>
+                </div>
               </div>
             </div>
           ) : (
@@ -144,6 +179,21 @@ export default function ProfilePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="label">Objectif calories/jour</label><input type="number" className="input-field" value={form.daily_calorie_target} onChange={e => setForm(f => ({ ...f, daily_calorie_target: e.target.value }))} /></div>
                 <div><label className="label">Métabolisme de base</label><input type="number" className="input-field" value={form.base_metabolism} onChange={e => setForm(f => ({ ...f, base_metabolism: e.target.value }))} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Objectif</label>
+                  <select className="input-field" value={form.goal_type} onChange={e => setForm(f => ({ ...f, goal_type: e.target.value }))}>
+                    <option value="LOSE_WEIGHT">Perte de poids</option>
+                    <option value="MAINTAIN">Maintien</option>
+                    <option value="GAIN_MUSCLE">Prise de muscle</option>
+                  </select>
+                </div>
+                <div><label className="label">Poids cible (kg)</label><input type="number" step="0.1" className="input-field" value={form.target_weight} onChange={e => setForm(f => ({ ...f, target_weight: e.target.value }))} placeholder="Ex: 75" /></div>
+              </div>
+              <div>
+                <label className="label">Objectif hydratation (L/jour)</label>
+                <input type="number" step="0.5" className="input-field" value={form.hydration_goal} onChange={e => setForm(f => ({ ...f, hydration_goal: e.target.value }))} placeholder="Ex: 2" />
               </div>
               <button onClick={handleSave} className="btn-primary flex items-center gap-2"><Save size={16} /> Enregistrer</button>
             </div>

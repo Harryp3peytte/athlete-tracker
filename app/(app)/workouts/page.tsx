@@ -45,6 +45,13 @@ type ProgramDay = {
 
 const REST_PRESETS = [30, 60, 90, 120, 150, 180];
 
+// Epley formula for estimated 1RM
+function estimate1RM(weight: number, reps: number): number {
+  if (reps <= 0 || weight <= 0) return 0;
+  if (reps === 1) return weight;
+  return Math.round(weight * (1 + reps / 30));
+}
+
 export default function WorkoutsPage() {
   const [tab, setTab] = useState<Tab>('programme');
 
@@ -654,6 +661,17 @@ export default function WorkoutsPage() {
                     <Check size={12} className="text-[#2AC956] ml-auto" />
                   </div>
                 ))}
+                {ex.series.length > 0 && (() => {
+                  const best = ex.series.reduce((best, s) => {
+                    const rm = estimate1RM(s.weight_kg, s.reps);
+                    return rm > best ? rm : best;
+                  }, 0);
+                  return best > 0 ? (
+                    <div className="text-[10px] font-semibold px-3 mt-1" style={{ color: '#BF5AF2' }}>
+                      1RM estimé : {best} kg
+                    </div>
+                  ) : null;
+                })()}
                 {ex.notes && (
                   <p className="text-xs italic px-3" style={{ color: '#9B8A8A' }}>
                     {ex.notes}
@@ -886,6 +904,17 @@ export default function WorkoutsPage() {
                                 {sd.completed && <Check size={10} className="text-[#2AC956]" />}
                               </div>
                             ))}
+                            {(() => {
+                              const best1RM = e.series_data.reduce((best, sd) => {
+                                const rm = estimate1RM(sd.weight_kg, sd.reps);
+                                return rm > best ? rm : best;
+                              }, 0);
+                              return best1RM > 0 ? (
+                                <div className="text-[10px] font-semibold px-2 mt-1" style={{ color: '#BF5AF2' }}>
+                                  1RM estimé : {best1RM} kg
+                                </div>
+                              ) : null;
+                            })()}
                             {e.notes && (
                               <p className="text-xs italic px-2 mt-1" style={{ color: '#9B8A8A' }}>
                                 {e.notes}

@@ -10,6 +10,8 @@ export const sleepSchema = z.object({
   date: z.string(),
   hours: z.number().positive().max(24),
   quality: z.number().int().min(1).max(10).optional().nullable(),
+  bedtime: z.string().optional().nullable(),
+  waketime: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
 });
 
@@ -72,6 +74,10 @@ export const hydrationSchema = z.object({
 export const wellnessSchema = z.object({
   date: z.string(),
   form_score: z.number().int().min(1).max(10),
+  energy: z.number().int().min(1).max(10).optional().nullable(),
+  stress: z.number().int().min(1).max(10).optional().nullable(),
+  pain: z.number().int().min(1).max(10).optional().nullable(),
+  motivation: z.number().int().min(1).max(10).optional().nullable(),
   notes: z.string().optional().nullable(),
 });
 
@@ -95,4 +101,7 @@ export const updateProfileSchema = z.object({
   gender: z.enum(['male', 'female', 'other']).optional().nullable(),
   daily_calorie_target: z.number().int().positive().optional().nullable(),
   base_metabolism: z.number().int().positive().optional().nullable(),
+  goal_type: z.enum(['LOSE_WEIGHT', 'MAINTAIN', 'GAIN_MUSCLE']).optional().nullable(),
+  target_weight: z.number().positive().optional().nullable(),
+  hydration_goal: z.number().positive().optional().nullable(),
 });

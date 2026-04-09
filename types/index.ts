@@ -12,6 +12,8 @@ export interface Athlete {
   base_metabolism: number | null;
   daily_calorie_target: number | null;
   goal_type: 'LOSE_WEIGHT' | 'MAINTAIN' | 'GAIN_MUSCLE' | null;
+  target_weight: number | null;
+  hydration_goal: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -31,6 +33,8 @@ export interface SleepLog {
   date: string;
   hours: number;
   quality: number | null;
+  bedtime: string | null;
+  waketime: string | null;
   notes: string | null;
   created_at: string;
 }
@@ -148,6 +152,10 @@ export interface WellnessLog {
   athlete_id: string;
   date: string;
   form_score: number;
+  energy: number | null;
+  stress: number | null;
+  pain: number | null;
+  motivation: number | null;
   notes: string | null;
   created_at: string;
 }

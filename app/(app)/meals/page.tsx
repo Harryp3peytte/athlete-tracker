@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Utensils, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Utensils, Trash2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import MacroPieChart from '@/components/charts/MacroPieChart';
 import BarChartComponent from '@/components/charts/BarChartComponent';
 import Modal from '@/components/ui/Modal';
@@ -97,6 +97,36 @@ export default function MealsPage() {
     fetchMeals();
   };
 
+  const handleCopyYesterday = async () => {
+    const yesterday = new Date(date + 'T12:00:00');
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    try {
+      const res = await fetch(`/api/meals?date=${yesterdayStr}`);
+      const yesterdayMeals: NutritionLog[] = await res.json();
+      if (!Array.isArray(yesterdayMeals) || yesterdayMeals.length === 0) {
+        alert('Aucun repas trouvé hier');
+        return;
+      }
+      for (const m of yesterdayMeals) {
+        await fetch('/api/meals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date,
+            meal_type: m.meal_type,
+            description: m.description,
+            calories: m.calories,
+            proteins: m.proteins,
+            carbs: m.carbs,
+            fats: m.fats,
+          }),
+        });
+      }
+      fetchMeals();
+    } catch (err) { console.error(err); }
+  };
+
   // Totals
   const totalCal  = meals.reduce((s, m) => s + m.calories, 0);
   const totalP    = meals.reduce((s, m) => s + m.proteins, 0);
@@ -118,9 +148,19 @@ export default function MealsPage() {
         <h1 className="title-apple flex items-center gap-2">
           <Utensils size={24} /> Alimentation
         </h1>
-        <button onClick={() => setModal(true)} className="btn-primary">
-          + Repas
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleCopyYesterday}
+            className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium transition-colors"
+            style={{ background: 'rgba(255,149,0,0.1)', color: '#FF9500' }}
+            title="Copier les repas de la veille"
+          >
+            <Copy size={14} /> Copier hier
+          </button>
+          <button onClick={() => setModal(true)} className="btn-primary">
+            + Repas
+          </button>
+        </div>
       </div>
 
       {/* Date navigation */}
