@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts';
 import { Plus, Utensils, Moon, Dumbbell, Scale, Droplets, Heart, Activity } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import BottomSheet from '@/components/ui/BottomSheet';
@@ -133,6 +136,89 @@ export default function DashboardPage() {
         <GlassCard className="!p-4 mb-4">
           <CaloriesChart data={data.calorieTrend || []} />
         </GlassCard>
+
+        {/* 3b. Weight Trend Chart */}
+        {data.weight.trend && data.weight.trend.length > 1 && (() => {
+          const weightData = data.weight.trend.map(w => ({
+            date: new Date(w.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
+            weight: w.weight_kg,
+          }));
+          const weights = data.weight.trend.map(w => w.weight_kg);
+          const minW = Math.min(...weights);
+          const maxW = Math.max(...weights);
+          const diff = weights[weights.length - 1] - weights[0];
+          const isDown = diff <= 0;
+
+          return (
+            <GlassCard className="!p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#30D158' }} />
+                  <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#6B5B5B' }}>
+                    Poids — 7 jours
+                  </h3>
+                </div>
+                <div className="text-right">
+                  <span className="text-lg font-bold" style={{ color: '#1A1A1A' }}>
+                    {data.weight.current} <span className="text-xs font-normal" style={{ color: '#9B8A8A' }}>kg</span>
+                  </span>
+                  {diff !== 0 && (
+                    <div className="text-xs font-semibold" style={{ color: isDown ? '#2AC956' : '#FF9500' }}>
+                      {isDown ? '' : '+'}{diff.toFixed(1)} kg
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div style={{ height: 160 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={weightData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+                    <defs>
+                      <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#30D158" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#30D158" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                    <XAxis
+                      dataKey="date"
+                      stroke="rgba(0,0,0,0.3)"
+                      tick={{ fill: 'rgba(0,0,0,0.5)', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      domain={[Math.floor(minW - 0.5), Math.ceil(maxW + 0.5)]}
+                      stroke="rgba(0,0,0,0.3)"
+                      tick={{ fill: 'rgba(0,0,0,0.5)', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: 'rgba(255,255,255,0.95)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(0,0,0,0.08)',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                        fontSize: 12,
+                      }}
+                      formatter={(value: number) => [`${value} kg`, 'Poids']}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="weight"
+                      stroke="#30D158"
+                      strokeWidth={3}
+                      fill="url(#weightGrad)"
+                      dot={{ r: 3, fill: '#30D158', stroke: '#fff', strokeWidth: 2 }}
+                      activeDot={{ r: 5, fill: '#30D158', stroke: '#fff', strokeWidth: 2 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </GlassCard>
+          );
+        })()}
 
         {/* 4. Activity Rings + Weight */}
         <GlassCard className="!p-4 mb-4">
