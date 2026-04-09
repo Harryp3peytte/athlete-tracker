@@ -186,23 +186,24 @@ export default function DashboardPage() {
 
       {/* Content area with fade transition */}
       <div
+        className="space-y-4"
         style={{
           opacity: transitioning ? 0.4 : 1,
           transition: 'opacity 0.2s ease',
         }}
       >
         {/* 3. Calories Chart (full width, big) */}
-        <GlassCard className="!p-4 mb-4">
+        <GlassCard className="!p-4">
           <CaloriesChart data={data.calorieTrend || []} />
         </GlassCard>
 
         {/* 3b. Weight Trend Chart */}
-        <GlassCard className="!p-4 mb-4">
+        <GlassCard className="!p-4">
           <WeightChart />
         </GlassCard>
 
         {/* 4. Activity Rings + Weight */}
-        <GlassCard className="!p-4 mb-4">
+        <GlassCard className="!p-4">
           <div className="flex gap-3">
             {/* Left: Weight mini chart */}
             <div className="flex-1 flex flex-col justify-center">
