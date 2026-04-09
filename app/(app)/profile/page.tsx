@@ -1,12 +1,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { User, LogOut, Target, Ruler, Activity, Save, Bell, Droplets, Scale } from 'lucide-react';
+import { User, LogOut, Target, Ruler, Activity, Save, Bell, Droplets, Scale, Trophy } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/hooks/useNotifications';
 import GlassCard from '@/components/ui/GlassCard';
 import TrendChart from '@/components/charts/TrendChart';
 import type { Athlete } from '@/types';
+
+interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  unlocked: boolean;
+  progress?: number;
+  progressLabel?: string;
+}
 
 type NotifPref = {
   reminder_type: string;
@@ -32,11 +43,17 @@ export default function ProfilePage() {
   const [form, setForm] = useState({ name: '', age: '', height_cm: '', gender: 'male', daily_calorie_target: '', base_metabolism: '', goal_type: 'MAINTAIN', target_weight: '', hydration_goal: '2' });
   const [deficitData, setDeficitData] = useState<Array<{ date: string; net: number; target: number }>>([]);
   const [notifPrefs, setNotifPrefs] = useState<NotifPref[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [badgeStats, setBadgeStats] = useState({ unlocked: 0, total: 0 });
   const { subscribe, isSubscribed, permission } = useNotifications();
 
   useEffect(() => {
     fetch('/api/notifications').then(r => r.json()).then((data: NotifPref[]) => {
       if (Array.isArray(data)) setNotifPrefs(data);
+    }).catch(console.error);
+    fetch('/api/badges').then(r => r.json()).then(data => {
+      setBadges(data.badges || []);
+      setBadgeStats({ unlocked: data.unlockedCount || 0, total: data.totalCount || 0 });
     }).catch(console.error);
   }, []);
 
@@ -212,6 +229,61 @@ export default function ProfilePage() {
             referenceLabel="Objectif"
             formatValue={v => `${v}kcal`}
           />
+        </GlassCard>
+      )}
+
+      {/* Badges */}
+      {badges.length > 0 && (
+        <GlassCard>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="section-header flex items-center gap-2">
+              <Trophy size={14} style={{ color: '#FFD700' }} /> Badges
+            </h3>
+            <span className="text-xs px-2 py-1 rounded-lg" style={{ background: '#FFD70020', color: '#B8860B' }}>
+              {badgeStats.unlocked}/{badgeStats.total}
+            </span>
+          </div>
+
+          {/* Unlocked badges */}
+          {badges.filter(b => b.unlocked).length > 0 && (
+            <div className="grid grid-cols-4 gap-2 mb-4">
+              {badges.filter(b => b.unlocked).map(badge => (
+                <div key={badge.id} className="flex flex-col items-center gap-1 py-2 rounded-xl" style={{ background: `${badge.color}10` }}>
+                  <span className="text-2xl">{badge.icon}</span>
+                  <span className="text-[9px] font-semibold text-center leading-tight px-1" style={{ color: badge.color }}>
+                    {badge.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Locked badges with progress */}
+          <div className="space-y-2">
+            {badges.filter(b => !b.unlocked).map(badge => (
+              <div key={badge.id} className="glass-subtle rounded-xl px-3 py-2.5 flex items-center gap-3" style={{ opacity: 0.6 }}>
+                <span className="text-xl grayscale">{badge.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold" style={{ color: '#6B5B5B' }}>{badge.name}</span>
+                    {badge.progressLabel && (
+                      <span className="text-[10px]" style={{ color: '#9B8A8A' }}>{badge.progressLabel}</span>
+                    )}
+                  </div>
+                  <div className="text-[10px] mb-1" style={{ color: '#9B8A8A' }}>{badge.description}</div>
+                  {badge.progress != null && (
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.06)' }}>
+                      <div className="h-full rounded-full" style={{
+                        width: `${badge.progress}%`,
+                        background: badge.color,
+                        opacity: 0.5,
+                      }} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </GlassCard>
       )}
 
